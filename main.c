@@ -19,28 +19,42 @@ typedef struct riadok {
     nacitam tabulku
     while cyklus ktory prebehne všetky argumenty
     každou iteraciou urobim upravu tabulky
-    vypíšem tabulka
+    vypíšem tabulku
 */
 
 //todo spravit list vypisu chyb
 //todo DELIM nesmí obsahovat uvozovky ani zpětné lomítko.
+//todo nakodit kontrolu argumentov pretoze akoze fuuu
 
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
 RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
+int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i);
 void vypis_tabulku(char delimiter, RIADOK *zaciatok);
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
-    char delimiter = ' ', delimiter_array[MAX] = {0}, meno_suboru[MAX] = {0};
-    int i = 1;
+    char delimiter = ' ', delimiter_array[MAX] = {0}, meno_suboru[MAX] = {0}, prikazy[1000][1000];
+    int i = 1, pocet_prikazov = 0;
     strcpy(meno_suboru,argv[argc-1]);
-    strcat(meno_suboru, ".txt");
     //if podmienka ktora skontroluje ci sa realne nacital delimeter, ak ano i = 3(dalsi argument v poradi)
     if ((nacitaj_delimiter(argc, argv, &delimiter, delimiter_array))){
         i = 3;
     }
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
+//    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
     vypis_tabulku(delimiter, zaciatok);
-//    printf("i: %d delimiter: %c array: %s\n", i, delimiter, delimiter_array);
+
+
+
+//    i = 0; int j = 0;
+//    while(i < pocet_prikazov){
+//        while(prikazy[i][j] != '\0'){
+//            printf("%c", prikazy[i][j++]);
+//        }
+//        printf("\n");
+//        i++, j = 0;
+//    }
+
+
     return 0;
 }
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]){
@@ -71,9 +85,10 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
         temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
         temp_riadok->p_dalsi_riadok = NULL;
         temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
-        while ((c = getc(fr)) != EOF) {                              // while cyklus sa vykonava dokym nenarazi na koniec suboru
-            if (c == '\n' && (c = getc(fr)) != EOF) {
-                ungetc(c, fr);
+        do {                              // while cyklus sa vykonava dokym nenarazi na koniec suboru
+            c = getc(fr);
+            if (c == '\n') {
+                c = getc(fr);
                 temp_stlpec->bunka[i] = '\0';
                 if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
                     p_stlpec = temp_stlpec;
@@ -85,7 +100,6 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
                 temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
                 pomocna_stlpec += 1;
                 j = 0, i = 0;
-                //BUGTEST
                 if (zaciatok == NULL) {                                    // ak načítavame prvý film
                     zaciatok = temp_riadok;
                 } else {
@@ -146,9 +160,31 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
             }
             j = 0;
             pocet_znakov++;
-        }
+        } while (c != EOF);
     }
     return zaciatok;
+}
+int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i){
+    int j = 0, r = 0, s = 0, kontrola = 0;
+    char pomocny_array[1000] = {0};
+    while(i < argc-1){
+        strcpy(pomocny_array, argv[i++]);
+        while(j < (int)strlen(pomocny_array)){
+            if(pomocny_array[j] == 39){
+                kontrola++, j++;
+            }
+            if(pomocny_array[j] == ';'){
+                r++, j++, s = 0;
+            }
+            prikazy[r][s++] = pomocny_array[j++];
+        }
+        if(kontrola == 2){
+            r++;
+            break;
+        }
+        j = 0;
+    }
+    return r;
 }
 void vypis_tabulku(char delimiter, RIADOK *zaciatok){
     if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spýtame či máme vôbec čo vypisovať
