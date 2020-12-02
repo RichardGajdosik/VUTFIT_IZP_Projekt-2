@@ -16,8 +16,8 @@ typedef struct riadok {
 /*
     nacitam delimiter                               DONE
     skontrolujem ci su argumenty korektne
-    nacitam tabulku
-    while cyklus ktory prebehne všetky argumenty
+    nacitam tabulku                                 DONE
+    while cyklus ktory prebehne všetky argumenty    DONE
     každou iteraciou urobim upravu tabulky
     vypíšem tabulku
 */
@@ -29,6 +29,7 @@ typedef struct riadok {
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
 RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
 int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i);
+int spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov);
 void vypis_tabulku(char delimiter, RIADOK *zaciatok);
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
@@ -40,10 +41,7 @@ int main(int argc, char *argv[]) {
         i = 3;
     }
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
-//    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
-    vypis_tabulku(delimiter, zaciatok);
-
-
+    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
 
 //    i = 0; int j = 0;
 //    while(i < pocet_prikazov){
@@ -53,8 +51,8 @@ int main(int argc, char *argv[]) {
 //        printf("\n");
 //        i++, j = 0;
 //    }
-
-
+    spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
+//    vypis_tabulku(delimiter, zaciatok);
     return 0;
 }
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]){
@@ -134,6 +132,7 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
                 p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
                 p_stlpec = NULL;
                 printf("Koniec!\n");
+                //todo zatvorit subor
                 return zaciatok;
             }
             while (j < (int) strlen(delimiter_array)) {
@@ -185,6 +184,29 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i){
         j = 0;
     }
     return r;
+}
+int spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov){
+    int i = 0, vybrany_riadok = 1000, vybrany_stlpec = 1000;
+    while(i < pocet_prikazov){
+        if(prikazy[i][0] == '['){ //todo pretypovat
+            if(prikazy[i][1] == '_'){
+                vybrany_riadok = 1000;
+            } else {
+                vybrany_riadok = prikazy[i][1];
+            }
+            if(prikazy[i][3] == '_'){
+                vybrany_stlpec = 1000;
+            } else {
+                vybrany_stlpec = prikazy[i][3];
+            }
+            printf("%c %c\n", vybrany_riadok, vybrany_stlpec);
+        }
+        else{
+            //porovna ktory prikaz chceme robit
+            // while cyklus po [ zistime ktory prikaz, spustime
+        }
+        i++;
+    }
 }
 void vypis_tabulku(char delimiter, RIADOK *zaciatok){
     if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spýtame či máme vôbec čo vypisovať
