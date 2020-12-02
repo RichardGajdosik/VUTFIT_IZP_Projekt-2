@@ -25,12 +25,20 @@ typedef struct riadok {
 //todo spravit list vypisu chyb
 //todo DELIM nesmí obsahovat uvozovky ani zpětné lomítko.
 //todo nakodit kontrolu argumentov pretoze akoze fuuu
-
+//todo čo sa stane ked vstup je prazdna bunka
+//todo pretypovat cely program zatial funguje iba 0 - 9
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
+
 RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
+
 int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i);
-int spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov);
+
+RIADOK* spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov);
+
 void vypis_tabulku(char delimiter, RIADOK *zaciatok);
+
+RIADOK* drow(RIADOK* zaciatok, int vybrany_riadok);
+
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
     char delimiter = ' ', delimiter_array[MAX] = {0}, meno_suboru[MAX] = {0}, prikazy[1000][1000];
@@ -41,7 +49,7 @@ int main(int argc, char *argv[]) {
         i = 3;
     }
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
-    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
+//    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
 
 //    i = 0; int j = 0;
 //    while(i < pocet_prikazov){
@@ -51,8 +59,9 @@ int main(int argc, char *argv[]) {
 //        printf("\n");
 //        i++, j = 0;
 //    }
-    spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
-//    vypis_tabulku(delimiter, zaciatok);
+
+//    zaciatok = spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
+    vypis_tabulku(delimiter, zaciatok);
     return 0;
 }
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]){
@@ -110,31 +119,32 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
                 p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
-            } else if (c == EOF) {
-                temp_stlpec->bunka[i] = '\0';
-                if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
-                    p_stlpec = temp_stlpec;
-                    temp_riadok->stlpec = p_stlpec;
-                } else {
-                    p_stlpec->p_dalsi_stlpec = temp_stlpec;
-                    p_stlpec = temp_stlpec;
-                }
-                pomocna_stlpec += 1;
-                if (zaciatok == NULL) {                                    // ak načítavame prvý film
-                    zaciatok = temp_riadok;
-                } else {
-                    p_riadok = zaciatok;
-                    while (p_riadok->p_dalsi_riadok != NULL) {                      // pripojíme struct na koniec linked listu
-                        p_riadok = p_riadok->p_dalsi_riadok;
-                    }
-                    p_riadok->p_dalsi_riadok = temp_riadok;
-                }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
-                p_stlpec = NULL;
-                printf("Koniec!\n");
-                //todo zatvorit subor
-                return zaciatok;
-            }
+            } 
+//            else if (c == EOF) {
+//                temp_stlpec->bunka[i] = '\0';
+//                if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+//                    p_stlpec = temp_stlpec;
+//                    temp_riadok->stlpec = p_stlpec;
+//                } else {
+//                    p_stlpec->p_dalsi_stlpec = temp_stlpec;
+//                    p_stlpec = temp_stlpec;
+//                }
+//                pomocna_stlpec += 1;
+//                if (zaciatok == NULL) {                                    // ak načítavame prvý film
+//                    zaciatok = temp_riadok;
+//                } else {
+//                    p_riadok = zaciatok;
+//                    while (p_riadok != NULL) {                      // pripojíme struct na koniec linked listu
+//                        p_riadok = p_riadok->p_dalsi_riadok;
+//                    }
+//                    p_riadok = temp_riadok;
+//                }
+//                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
+//                p_stlpec = NULL;
+//                printf("Koniec!\n");
+//                //todo zatvorit subor
+//                return zaciatok;
+//            }
             while (j < (int) strlen(delimiter_array)) {
                 if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                     temp_stlpec->bunka[i] = '\0';
@@ -164,7 +174,7 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
     return zaciatok;
 }
 int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i){
-    int j = 0, r = 0, s = 0, kontrola = 0;
+    int j = 0, r = 0, s = 0, kontrola = 0, kontrola_medzery = 0;
     char pomocny_array[1000] = {0};
     while(i < argc-1){
         strcpy(pomocny_array, argv[i++]);
@@ -177,6 +187,9 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i){
             }
             prikazy[r][s++] = pomocny_array[j++];
         }
+        if(s != 0){
+            prikazy[r][s++] = ' ';
+        }
         if(kontrola == 2){
             r++;
             break;
@@ -185,28 +198,40 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i){
     }
     return r;
 }
-int spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov){
-    int i = 0, vybrany_riadok = 1000, vybrany_stlpec = 1000;
+RIADOK* spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov){
+    int i = 0, j = 0, k = 0, vybrany_riadok = 1000, vybrany_stlpec = 1000;
+    char pomocny_array[100] = {0};
     while(i < pocet_prikazov){
-        if(prikazy[i][0] == '['){ //todo pretypovat
+        if(prikazy[i][0] == '['){
             if(prikazy[i][1] == '_'){
-                vybrany_riadok = 1000;
+                vybrany_riadok = '_';
             } else {
-                vybrany_riadok = prikazy[i][1];
+                vybrany_riadok = prikazy[i][1] - '0';
             }
             if(prikazy[i][3] == '_'){
-                vybrany_stlpec = 1000;
+                vybrany_stlpec = '_';
             } else {
-                vybrany_stlpec = prikazy[i][3];
+                vybrany_stlpec = prikazy[i][3] - '0';
             }
-            printf("%c %c\n", vybrany_riadok, vybrany_stlpec);
-        }
-        else{
+//            printf("%c %c\n", vybrany_riadok, vybrany_stlpec);
+        } else {
+            while(prikazy[i][j] != ' ' && prikazy[i][j] != '\0'){
+                pomocny_array[k++] = prikazy[i][j++];
+            }
+            if(strcmp(pomocny_array, "drow") == 0){
+                zaciatok = drow(zaciatok, vybrany_riadok);
+            }
             //porovna ktory prikaz chceme robit
             // while cyklus po [ zistime ktory prikaz, spustime
         }
-        i++;
+//        printf("%s\n", pomocny_array);
+        i++, j = 0, k = 0;
+        while(pomocny_array[j] != '\0') {
+            pomocny_array[j++] = '\0';
+        }
+        j = 0;
     }
+    return zaciatok;
 }
 void vypis_tabulku(char delimiter, RIADOK *zaciatok){
     if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spýtame či máme vôbec čo vypisovať
@@ -227,4 +252,60 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok){
             }
         } while (p != NULL);
     }
+}
+RIADOK* drow(RIADOK* zaciatok, int vybrany_riadok){
+    RIADOK* pomocny_pointer_riadok = NULL;
+    RIADOK* p_p_riadok_2 = NULL;
+    STLPEC* pomocny_pointer_stlpec = NULL;
+    STLPEC* stlpec = NULL;
+    int spravny_riadok = 0;
+    if(vybrany_riadok == '_'){
+        while(zaciatok != NULL){
+        pomocny_pointer_riadok = zaciatok->p_dalsi_riadok;
+        stlpec = zaciatok->stlpec;
+            while(stlpec->p_dalsi_stlpec != NULL){
+                pomocny_pointer_stlpec = stlpec;
+                stlpec = stlpec->p_dalsi_stlpec;
+                free(pomocny_pointer_stlpec);
+                pomocny_pointer_stlpec = NULL;
+            }
+            free(zaciatok);
+            zaciatok = pomocny_pointer_riadok;
+        }
+    } else if (vybrany_riadok == 1){
+        pomocny_pointer_riadok = zaciatok->p_dalsi_riadok;
+        stlpec = zaciatok->stlpec;
+        while(stlpec->p_dalsi_stlpec != NULL){
+            pomocny_pointer_stlpec = stlpec;
+            stlpec = stlpec->p_dalsi_stlpec;
+            free(pomocny_pointer_stlpec);
+            pomocny_pointer_stlpec = NULL;
+        }
+        free(zaciatok);
+        zaciatok = pomocny_pointer_riadok;
+    } else {
+        pomocny_pointer_riadok = zaciatok;
+        while(spravny_riadok++ != vybrany_riadok){
+            pomocny_pointer_riadok = pomocny_pointer_riadok->p_dalsi_riadok;
+            if(pomocny_pointer_riadok == NULL){
+                return zaciatok;
+            }
+        }
+        //nastavime p p riadok 2 na riadok ktory chceme odstranit
+        p_p_riadok_2 = pomocny_pointer_riadok->p_dalsi_riadok;
+        //nastavime prepojime 2 pointre s tym ze vynehame zrovna riadok ktory ideme premazat ..+++-+++.. = ..++++++..
+        pomocny_pointer_riadok->p_dalsi_riadok = p_p_riadok_2 ->p_dalsi_riadok;
+
+        stlpec = p_p_riadok_2->stlpec;
+        while(stlpec->p_dalsi_stlpec != NULL){
+            pomocny_pointer_stlpec = stlpec;
+            stlpec = stlpec->p_dalsi_stlpec;
+            free(pomocny_pointer_stlpec);
+            pomocny_pointer_stlpec = NULL;
+        }
+        free(p_p_riadok_2);
+        p_p_riadok_2 = NULL;
+    }
+    printf("Success");
+    return zaciatok;
 }
