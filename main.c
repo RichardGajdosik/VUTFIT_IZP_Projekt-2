@@ -119,32 +119,32 @@ RIADOK* nacitaj_tabulku(char meno_suboru[], char delimiter_array[]){
                 p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
-            } 
-//            else if (c == EOF) {
-//                temp_stlpec->bunka[i] = '\0';
-//                if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
-//                    p_stlpec = temp_stlpec;
-//                    temp_riadok->stlpec = p_stlpec;
-//                } else {
-//                    p_stlpec->p_dalsi_stlpec = temp_stlpec;
-//                    p_stlpec = temp_stlpec;
-//                }
-//                pomocna_stlpec += 1;
-//                if (zaciatok == NULL) {                                    // ak načítavame prvý film
-//                    zaciatok = temp_riadok;
-//                } else {
-//                    p_riadok = zaciatok;
-//                    while (p_riadok != NULL) {                      // pripojíme struct na koniec linked listu
-//                        p_riadok = p_riadok->p_dalsi_riadok;
-//                    }
-//                    p_riadok = temp_riadok;
-//                }
-//                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
-//                p_stlpec = NULL;
-//                printf("Koniec!\n");
-//                //todo zatvorit subor
-//                return zaciatok;
-//            }
+                temp_riadok->p_dalsi_riadok = NULL;
+            } else if (c == EOF) {
+                temp_stlpec->bunka[i] = '\0';
+                if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+                    p_stlpec = temp_stlpec;
+                    temp_riadok->stlpec = p_stlpec;
+                } else {
+                    p_stlpec->p_dalsi_stlpec = temp_stlpec;
+                    p_stlpec = temp_stlpec;
+                }
+                pomocna_stlpec += 1;
+                if (zaciatok == NULL) {                                    // ak načítavame prvý film
+                    zaciatok = temp_riadok;
+                } else {
+                    p_riadok = zaciatok;
+                    while (p_riadok->p_dalsi_riadok != NULL) {                      // pripojíme struct na koniec linked listu
+                        p_riadok = p_riadok->p_dalsi_riadok;
+                    }
+                    p_riadok->p_dalsi_riadok = temp_riadok;
+                }
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
+                p_stlpec = NULL;
+                printf("Koniec!\n");
+                //todo zatvorit subor
+                return zaciatok;
+            }
             while (j < (int) strlen(delimiter_array)) {
                 if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                     temp_stlpec->bunka[i] = '\0';
