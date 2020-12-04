@@ -43,6 +43,12 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok);
 
 RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok);
 
+RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec);
+
+RIADOK *acol(RIADOK *zaciatok, int vybrany_stlpec);
+
+RIADOK *dcol(RIADOK *zaciatok, int vybrany_stlpec);
+
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
     char delimiter = ' ', delimiter_array[MAX] = {0}, meno_suboru[MAX] = {0}, prikazy[1000][1000];
@@ -239,6 +245,12 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 zaciatok = arow(zaciatok, vybrany_riadok);
             } else if (strcmp(pomocny_array, "drow") == 0) {
                 zaciatok = drow(zaciatok, vybrany_riadok);
+            } else if (strcmp(pomocny_array, "icol") == 0) {
+                zaciatok = icol(zaciatok, vybrany_riadok, vybrany_stlpec);
+            } else if (strcmp(pomocny_array, "acol") == 0) {
+//                zaciatok = acol(zaciatok, vybrany_riadok);
+            } else if (strcmp(pomocny_array, "dcol") == 0) {
+//                zaciatok = dcol(zaciatok, vybrany_riadok);
             }
             //porovna ktory prikaz chceme robit
             // while cyklus po [ zistime ktory prikaz, spustime
@@ -290,7 +302,7 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok) {
         pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
         pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
-        while (i++ < zaciatok->pocet_stlpcov ) {
+        while (i++ < zaciatok->pocet_stlpcov) {
             pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
             pomocny_pointer_stlpec->bunka[0] = '\0';
             pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
@@ -304,7 +316,7 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok) {
         } else {
             i = 1;
             pointer_riadok = zaciatok;
-            while(pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok){
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             pomocny_pointer_riadok->p_dalsi_riadok = pointer_riadok->p_dalsi_riadok;
@@ -329,7 +341,7 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok) {
         pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
         pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
-        while (i++ < zaciatok->pocet_stlpcov ) {
+        while (i++ < zaciatok->pocet_stlpcov) {
             pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
             pomocny_pointer_stlpec->bunka[0] = '\0';
             pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
@@ -344,7 +356,7 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok) {
             i = 1;
             pointer_riadok = zaciatok;
             //todo ked je vzbrany riadok _ nejak vymysliet ako dam funkciam vediet
-            while(pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok + 1){
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok + 1) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             pomocny_pointer_riadok->p_dalsi_riadok = pointer_riadok->p_dalsi_riadok;
@@ -408,5 +420,60 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok) {
         p_p_riadok_2 = NULL;
     }
     printf("Success");
+    return zaciatok;
+}
+
+RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
+    if (zaciatok != NULL) {
+        int i = 1, j = 1;
+        RIADOK *pointer_riadok = zaciatok;
+//TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
+        if (vybrany_riadok == '_') {
+           do{
+                if (pointer_riadok->stlpec != NULL) {
+                    STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+                    STLPEC *pointer_stlpec = pointer_riadok->stlpec;
+                    pointer_riadok->pocet_stlpcov++;
+
+                    if (vybrany_stlpec == 1 || vybrany_stlpec == '_') {
+                        pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec;
+                        pointer_riadok->stlpec = pomocny_pointer_stlpec;
+                    } else {
+                        j = 1;
+                        while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec - 1) {
+                            pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                        }
+                        pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                        pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
+                        pomocny_pointer_stlpec->bunka[0] = '\0';
+                    }
+                    pomocny_pointer_stlpec->bunka[0] = '\0';
+                }
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            } while (pointer_riadok != NULL && i++ < vybrany_riadok);
+        } else {
+            i = 1;
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            }
+            if (pointer_riadok->stlpec != NULL) {
+                STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+                STLPEC *pointer_stlpec = pointer_riadok->stlpec;
+                pointer_riadok->pocet_stlpcov++;
+                if (vybrany_stlpec == 1 || vybrany_stlpec == '_') {
+                    pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec;
+                    pointer_riadok->stlpec = pomocny_pointer_stlpec;
+                } else {
+                    j = 1;
+                    while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec - 1) {
+                        pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                    }
+                    pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                    pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
+                }
+                pomocny_pointer_stlpec->bunka[0] = '\0';
+            }
+        }
+    }
     return zaciatok;
 }
