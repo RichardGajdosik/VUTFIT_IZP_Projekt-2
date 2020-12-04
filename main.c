@@ -250,7 +250,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
             } else if (strcmp(pomocny_array, "acol") == 0) {
                 zaciatok = acol(zaciatok, vybrany_riadok, vybrany_stlpec);
             } else if (strcmp(pomocny_array, "dcol") == 0) {
-//                zaciatok = dcol(zaciatok, vybrany_riadok);
+                zaciatok = dcol(zaciatok, vybrany_riadok, vybrany_stlpec);
             }
             //porovna ktory prikaz chceme robit
             // while cyklus po [ zistime ktory prikaz, spustime
@@ -514,6 +514,89 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                 pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
 
                 pomocny_pointer_stlpec->bunka[0] = '\0';
+            }
+        }
+    }
+    return zaciatok;
+}
+
+RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
+    if (zaciatok != NULL) {
+        int i = 1, j = 1;
+        RIADOK *pointer_riadok = zaciatok;
+//TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
+        if (vybrany_riadok == '_') {
+            do {
+                if (pointer_riadok->stlpec != NULL) {
+                    STLPEC *pomocny_pointer_stlpec = NULL;
+                    STLPEC *pointer_stlpec = pointer_riadok->stlpec;
+                    if (vybrany_stlpec == '_') {
+                        //TODO ZAVOLAM FUNKCIU NA KOMPLETNE VYNULOVANIE
+                        return zaciatok;
+                    } else {
+                        if (vybrany_stlpec == 1) {
+                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                            free(pointer_stlpec);
+                            pointer_stlpec = NULL;
+                            pointer_riadok->stlpec = pomocny_pointer_stlpec;
+                        } else {
+                            j = 1;
+                            while (j++ < vybrany_stlpec - 1) {
+                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                                // zadany stlpec na vymazanie je mimo rozsahu tabulky
+                                if (pointer_stlpec == NULL) {
+                                    return zaciatok;
+                                }
+                            }
+
+                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+                            free(pomocny_pointer_stlpec);
+                            pomocny_pointer_stlpec = NULL;
+                        }
+                    }
+                }
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            } while (pointer_riadok != NULL && i++ < vybrany_riadok);
+        } else {
+            i = 1;
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            }
+            if (pointer_riadok->stlpec != NULL) {
+                STLPEC *pomocny_pointer_stlpec = NULL;
+                STLPEC *pointer_stlpec = pointer_riadok->stlpec;
+                if (vybrany_stlpec == '_') {
+                    while(pointer_stlpec != NULL){
+                        pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                        free(pointer_stlpec);
+                        pointer_stlpec = pomocny_pointer_stlpec;
+                    }
+                    //todo potrebujem vymazat cely riadok
+                    //TODO ERROR [5,_];dcol
+                    pointer_riadok->stlpec = NULL;
+                    return zaciatok;
+                } else {
+                    if (vybrany_stlpec == 1) {
+                        pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                        free(pointer_stlpec);
+                        pointer_stlpec = NULL;
+                        pointer_riadok->stlpec = pomocny_pointer_stlpec;
+                    } else {
+                        j = 1;
+                        while (j++ < vybrany_stlpec - 1) {
+                            pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                            // zadany stlpec na vymazanie je mimo rozsahu tabulky
+                            if (pointer_stlpec == NULL) {
+                                return zaciatok;
+                            }
+                        }
+                        pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                        pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+                        free(pomocny_pointer_stlpec);
+                        pomocny_pointer_stlpec = NULL;
+                    }
+                }
             }
         }
     }
