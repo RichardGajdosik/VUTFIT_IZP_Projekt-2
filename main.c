@@ -37,6 +37,8 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
 
 void vypis_tabulku(char delimiter, RIADOK *zaciatok);
 
+RIADOK *uvolni(RIADOK *zaciatok);
+
 RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok);
 
 RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok);
@@ -72,6 +74,7 @@ int main(int argc, char *argv[]) {
 
     zaciatok = spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
     vypis_tabulku(delimiter, zaciatok);
+    zaciatok = uvolni(zaciatok);
     return 0;
 }
 
@@ -531,7 +534,7 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     STLPEC *pomocny_pointer_stlpec = NULL;
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                     if (vybrany_stlpec == '_') {
-                        //TODO ZAVOLAM FUNKCIU NA KOMPLETNE VYNULOVANIE
+                        zaciatok = uvolni(zaciatok);
                         return zaciatok;
                     } else {
                         if (vybrany_stlpec == 1) {
@@ -567,7 +570,7 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                 STLPEC *pomocny_pointer_stlpec = NULL;
                 STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                 if (vybrany_stlpec == '_') {
-                    while(pointer_stlpec != NULL){
+                    while (pointer_stlpec != NULL) {
                         pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                         free(pointer_stlpec);
                         pointer_stlpec = pomocny_pointer_stlpec;
@@ -601,4 +604,27 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
         }
     }
     return zaciatok;
+}
+
+RIADOK *uvolni(RIADOK *zaciatok) {
+    if (zaciatok != NULL) {
+        RIADOK *pomocny_pointer_riadok = NULL;
+        RIADOK *pointer_riadok = zaciatok;
+        STLPEC *pomocny_pointer_stlpec = NULL;
+        STLPEC *pointer_stlpec = NULL;
+        while (pointer_riadok != NULL) {
+            pomocny_pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            pointer_stlpec = pointer_riadok->stlpec;
+            while (pointer_stlpec != NULL) {
+                pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                free(pointer_stlpec);
+                pointer_stlpec = pomocny_pointer_stlpec;
+            }
+            pointer_riadok->stlpec = NULL;
+            free(pointer_riadok);
+            pointer_riadok = pomocny_pointer_riadok;
+        }
+        zaciatok = NULL;
+        return zaciatok;
+    }
 }
