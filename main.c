@@ -39,17 +39,21 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok);
 
 RIADOK *uvolni(RIADOK *zaciatok);
 
-RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok);
+RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_do);
 
-RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok);
+RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do);
 
-RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok);
+RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok_do);
 
-RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec);
+RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do);
 
-RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec);
+RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do);
 
-RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec);
+RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do);
+
+void funkcia_set(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
+                 int vybrany_stlpec_do,
+                 char set[]);
 
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
@@ -223,37 +227,54 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i) {
 }
 
 RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov) {
-    int i = 0, j = 0, k = 0, vybrany_riadok = 1000, vybrany_stlpec = 1000;
+    int i = 0, j = 0, k = 0, vybrany_riadok_od = 1, vybrany_riadok_do = 1000, vybrany_stlpec_od = 1, vybrany_stlpec_do = 1000;
     char pomocny_array[100] = {0};
+    char set[1000] = {0};
     while (i < pocet_prikazov) {
         if (prikazy[i][0] == '[') {
             if (prikazy[i][1] == '_') {
-                vybrany_riadok = '_';
+                vybrany_riadok_od = 1;
+                vybrany_riadok_do = '_';
             } else {
-                vybrany_riadok = prikazy[i][1] - '0';
+                vybrany_riadok_od = prikazy[i][1] - '0';
+                vybrany_riadok_do = prikazy[i][1] - '0';
             }
             if (prikazy[i][3] == '_') {
-                vybrany_stlpec = '_';
+                vybrany_stlpec_od = 1;
+                vybrany_stlpec_do = '_';
             } else {
-                vybrany_stlpec = prikazy[i][3] - '0';
+                vybrany_stlpec_od = prikazy[i][3] - '0';
+                vybrany_stlpec_do = prikazy[i][3] - '0';
             }
-//            printf("%c %c\n", vybrany_riadok, vybrany_stlpec);
+//            printf("%c %c\n", vybrany_riadok_do, vybrany_stlpec_do);
         } else {
             while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                 pomocny_array[k++] = prikazy[i][j++];
             }
             if (strcmp(pomocny_array, "irow") == 0) {
-                zaciatok = irow(zaciatok, vybrany_riadok);
+                zaciatok = irow(zaciatok, vybrany_riadok_do);
             } else if (strcmp(pomocny_array, "arow") == 0) {
-                zaciatok = arow(zaciatok, vybrany_riadok);
+                zaciatok = arow(zaciatok, vybrany_riadok_do);
             } else if (strcmp(pomocny_array, "drow") == 0) {
-                zaciatok = drow(zaciatok, vybrany_riadok);
+                zaciatok = drow(zaciatok, vybrany_riadok_do);
             } else if (strcmp(pomocny_array, "icol") == 0) {
-                zaciatok = icol(zaciatok, vybrany_riadok, vybrany_stlpec);
+                zaciatok = icol(zaciatok, vybrany_riadok_do, vybrany_stlpec_do);
             } else if (strcmp(pomocny_array, "acol") == 0) {
-                zaciatok = acol(zaciatok, vybrany_riadok, vybrany_stlpec);
+                zaciatok = acol(zaciatok, vybrany_riadok_do, vybrany_stlpec_do);
             } else if (strcmp(pomocny_array, "dcol") == 0) {
-                zaciatok = dcol(zaciatok, vybrany_riadok, vybrany_stlpec);
+                zaciatok = dcol(zaciatok, vybrany_riadok_do, vybrany_stlpec_do);
+            } else if (strcmp(pomocny_array, "set") == 0) {
+                k = j, j = 0;
+                while (pomocny_array[j] != '\0') {
+                    pomocny_array[j++] = '\0';
+                }
+                j = k, k = 0, j++;
+                while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
+                    pomocny_array[k++] = prikazy[i][j++];
+                }
+                strcpy(set, pomocny_array);
+                funkcia_set(zaciatok, vybrany_riadok_od, vybrany_riadok_do, vybrany_stlpec_od, vybrany_stlpec_do, set);
+//                printf("\n%s", pomocny_array);
             }
             //porovna ktory prikaz chceme robit
             // while cyklus po [ zistime ktory prikaz, spustime
@@ -290,7 +311,7 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok) {
     }
 }
 
-RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok) {
+RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_do) {
     if (zaciatok != NULL) {
         int i = 1;
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
@@ -313,13 +334,13 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok) {
             pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
             pointer_stlpec->p_dalsi_stlpec = NULL;
         }
-        if (vybrany_riadok == 1 || vybrany_riadok == '_') {
+        if (vybrany_riadok_do == 1 || vybrany_riadok_do == '_') {
             pomocny_pointer_riadok->p_dalsi_riadok = zaciatok;
             zaciatok = pomocny_pointer_riadok;
         } else {
             i = 1;
             pointer_riadok = zaciatok;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             pomocny_pointer_riadok->p_dalsi_riadok = pointer_riadok->p_dalsi_riadok;
@@ -329,7 +350,7 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok) {
     return zaciatok;
 }
 
-RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok) {
+RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do) {
     if (zaciatok != NULL) {
         int i = 1;
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
@@ -355,7 +376,7 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok) {
         pointer_riadok = zaciatok;
         i = 1;
         //todo ked je vzbrany riadok _ nejak vymysliet ako dam funkciam vediet
-        while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+        while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
             pointer_riadok = pointer_riadok->p_dalsi_riadok;
         }
         pomocny_pointer_riadok->p_dalsi_riadok = pointer_riadok->p_dalsi_riadok;
@@ -364,13 +385,13 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok) {
     return zaciatok;
 }
 
-RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok) {
+RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok_do) {
     RIADOK *pomocny_pointer_riadok = NULL;
     RIADOK *p_p_riadok_2 = NULL;
     STLPEC *pomocny_pointer_stlpec = NULL;
     STLPEC *stlpec = NULL;
     int spravny_riadok = 1;
-    if (vybrany_riadok == '_') {
+    if (vybrany_riadok_do == '_') {
         while (zaciatok != NULL) {
             pomocny_pointer_riadok = zaciatok->p_dalsi_riadok;
             stlpec = zaciatok->stlpec;
@@ -383,7 +404,7 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok) {
             free(zaciatok);
             zaciatok = pomocny_pointer_riadok;
         }
-    } else if (vybrany_riadok == 1) {
+    } else if (vybrany_riadok_do == 1) {
         pomocny_pointer_riadok = zaciatok->p_dalsi_riadok;
         stlpec = zaciatok->stlpec;
         while (stlpec->p_dalsi_stlpec != NULL) {
@@ -396,7 +417,7 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok) {
         zaciatok = pomocny_pointer_riadok;
     } else {
         pomocny_pointer_riadok = zaciatok;
-        while (spravny_riadok++ != vybrany_riadok - 1) {
+        while (spravny_riadok++ != vybrany_riadok_do - 1) {
             pomocny_pointer_riadok = pomocny_pointer_riadok->p_dalsi_riadok;
             if (pomocny_pointer_riadok == NULL) {
                 return zaciatok;
@@ -421,24 +442,24 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok) {
     return zaciatok;
 }
 
-RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
+RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
     if (zaciatok != NULL) {
         int i = 1, j = 1;
         RIADOK *pointer_riadok = zaciatok;
 //TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
-        if (vybrany_riadok == '_') {
+        if (vybrany_riadok_do == '_') {
             do {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                     pointer_riadok->pocet_stlpcov++;
 
-                    if (vybrany_stlpec == 1 || vybrany_stlpec == '_') {
+                    if (vybrany_stlpec_do == 1 || vybrany_stlpec_do == '_') {
                         pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec;
                         pointer_riadok->stlpec = pomocny_pointer_stlpec;
                     } else {
                         j = 1;
-                        while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec - 1) {
+                        while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec_do - 1) {
                             pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                         }
                         pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
@@ -448,22 +469,22 @@ RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     pomocny_pointer_stlpec->bunka[0] = '\0';
                 }
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
-            } while (pointer_riadok != NULL && i++ < vybrany_riadok);
+            } while (pointer_riadok != NULL && i++ < vybrany_riadok_do);
         } else {
             i = 1;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             if (pointer_riadok->stlpec != NULL) {
                 STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
                 STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                 pointer_riadok->pocet_stlpcov++;
-                if (vybrany_stlpec == 1 || vybrany_stlpec == '_') {
+                if (vybrany_stlpec_do == 1 || vybrany_stlpec_do == '_') {
                     pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec;
                     pointer_riadok->stlpec = pomocny_pointer_stlpec;
                 } else {
                     j = 1;
-                    while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec - 1) {
+                    while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec_do - 1) {
                         pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                     }
                     pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
@@ -476,12 +497,12 @@ RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
     return zaciatok;
 }
 
-RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
+RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
     if (zaciatok != NULL) {
         int i = 1, j = 1;
         RIADOK *pointer_riadok = zaciatok;
 //TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
-        if (vybrany_riadok == '_') {
+        if (vybrany_riadok_do == '_') {
             do {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
@@ -489,7 +510,7 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     pointer_riadok->pocet_stlpcov++;
 
                     j = 1;
-                    while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec) {
+                    while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec_do) {
                         pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                     }
                     pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
@@ -498,10 +519,10 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     pomocny_pointer_stlpec->bunka[0] = '\0';
                 }
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
-            } while (pointer_riadok != NULL && i++ < vybrany_riadok);
+            } while (pointer_riadok != NULL && i++ < vybrany_riadok_do);
         } else {
             i = 1;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             if (pointer_riadok->stlpec != NULL) {
@@ -510,7 +531,7 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                 pointer_riadok->pocet_stlpcov++;
 
                 j = 1;
-                while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec) {
+                while (pointer_stlpec->p_dalsi_stlpec != NULL && j++ < vybrany_stlpec_do) {
                     pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                 }
                 pomocny_pointer_stlpec->p_dalsi_stlpec = pointer_stlpec->p_dalsi_stlpec;
@@ -523,28 +544,28 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
     return zaciatok;
 }
 
-RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
+RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
     if (zaciatok != NULL) {
         int i = 1, j = 1;
         RIADOK *pointer_riadok = zaciatok;
 //TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
-        if (vybrany_riadok == '_') {
+        if (vybrany_riadok_do == '_') {
             do {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = NULL;
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
-                    if (vybrany_stlpec == '_') {
+                    if (vybrany_stlpec_do == '_') {
                         zaciatok = uvolni(zaciatok);
                         return zaciatok;
                     } else {
-                        if (vybrany_stlpec == 1) {
+                        if (vybrany_stlpec_do == 1) {
                             pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                             free(pointer_stlpec);
                             pointer_stlpec = NULL;
                             pointer_riadok->stlpec = pomocny_pointer_stlpec;
                         } else {
                             j = 1;
-                            while (j++ < vybrany_stlpec - 1) {
+                            while (j++ < vybrany_stlpec_do - 1) {
                                 pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                                 // zadany stlpec na vymazanie je mimo rozsahu tabulky
                                 if (pointer_stlpec == NULL) {
@@ -560,16 +581,16 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     }
                 }
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
-            } while (pointer_riadok != NULL && i++ < vybrany_riadok);
+            } while (pointer_riadok != NULL && i++ < vybrany_riadok_do);
         } else {
             i = 1;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok) {
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             if (pointer_riadok->stlpec != NULL) {
                 STLPEC *pomocny_pointer_stlpec = NULL;
                 STLPEC *pointer_stlpec = pointer_riadok->stlpec;
-                if (vybrany_stlpec == '_') {
+                if (vybrany_stlpec_do == '_') {
                     while (pointer_stlpec != NULL) {
                         pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                         free(pointer_stlpec);
@@ -580,14 +601,14 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
                     pointer_riadok->stlpec = NULL;
                     return zaciatok;
                 } else {
-                    if (vybrany_stlpec == 1) {
+                    if (vybrany_stlpec_do == 1) {
                         pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                         free(pointer_stlpec);
                         pointer_stlpec = NULL;
                         pointer_riadok->stlpec = pomocny_pointer_stlpec;
                     } else {
                         j = 1;
-                        while (j++ < vybrany_stlpec - 1) {
+                        while (j++ < vybrany_stlpec_do - 1) {
                             pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                             // zadany stlpec na vymazanie je mimo rozsahu tabulky
                             if (pointer_stlpec == NULL) {
@@ -604,6 +625,52 @@ RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok, int vybrany_stlpec) {
         }
     }
     return zaciatok;
+}
+
+void funkcia_set(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
+                 int vybrany_stlpec_do,
+                 char set[]) {
+    int i = 1, j = 1;
+    if (zaciatok != NULL) {
+        RIADOK *pointer_riadok = zaciatok;
+        STLPEC *pointer_stlpec = NULL;
+
+        while (i++ < vybrany_riadok_od) {
+            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            if (pointer_riadok == NULL) {
+                //mimo rozsah
+                return;
+            }
+        }
+        i = vybrany_riadok_od;
+
+        // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
+        while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
+            pointer_stlpec = pointer_riadok->stlpec;
+            while (j++ < vybrany_stlpec_od) {
+                if (pointer_stlpec == NULL) {
+                    if (pointer_riadok->p_dalsi_riadok != NULL) {
+                        pointer_riadok = pointer_riadok->p_dalsi_riadok;
+                        pointer_stlpec = pointer_riadok->stlpec;
+                        j = 1, i++;
+                        continue;
+                    } else {
+                        return;
+                    }
+                }
+                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+            j = vybrany_stlpec_od;
+
+            while (pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                strcpy(pointer_stlpec->bunka, set);
+                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+            //TU BY SOM MAL BYT NA STLPCI OD KTOREHO CHCEM MENIT
+            j = 1;
+            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+        }
+    }
 }
 
 RIADOK *uvolni(RIADOK *zaciatok) {
