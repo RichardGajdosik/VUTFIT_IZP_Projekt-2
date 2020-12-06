@@ -298,9 +298,9 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                         break;
                     }
                 }
-                if (kontrola_ciarok > 3) {
+                //todo bugtest pravdepodobne zle
+                if (kontrola_ciarok != 3) {
                     kontrola_R1_C1_R2_C2 = 0;
-                    break;
                 }
                 pomocny_array[k++] = prikazy[i][j++];
             }
@@ -325,7 +325,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 vybrany_stlpec_do_int = '_';
                 // pokial mame argument typu [_,int]
             } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',') {
-                int p = 2;
+                int p = 3;
                 while (prikazy[i][p] != ']') {
                     if (prikazy[i][p] == '\0' || !(prikazy[i][p] >= '0' && prikazy[i][p] <= '9')) {
                         fprintf(stderr, "%s", "Zly argument!""\n");
@@ -1201,7 +1201,7 @@ void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
 }
 
 void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,int *vybrany_stlpec_do) {
-    int i = 1, j = 1, x = 1, y = 1;
+    int i = 1, j = 1, x = -1, y = -1;
     double pomocne_cislo = 0,  min = -1;
     //todo spravit cez malloc
     char STR[MAX] = {0}, *ptr;
@@ -1263,8 +1263,10 @@ void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
             j = 1;
             pointer_riadok = pointer_riadok->p_dalsi_riadok;
         }
-        *vybrany_riadok_od = *vybrany_riadok_do = x;
-        *vybrany_stlpec_od = *vybrany_stlpec_do = y;
+        if(x != -1 && y !=-1){
+            *vybrany_riadok_od = *vybrany_riadok_do = x;
+            *vybrany_stlpec_od = *vybrany_stlpec_do = y;
+        }
     }
 }
 
