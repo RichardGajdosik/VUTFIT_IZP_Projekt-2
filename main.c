@@ -257,15 +257,20 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i) {
 
 RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov) {
     int i = 0, j = 0, k = 0, vybrany_riadok_od_int = 1, vybrany_riadok_do_int = 1000, vybrany_stlpec_od_int = 1, vybrany_stlpec_do_int = 1000, riadok = 1, stlpec = 1;
+    int predchadzajuci_vybrany_riadok_od_int = 1, predchadzajuci_vybrany_riadok_do_int = 1000, predchadzajuci_vybrany_stlpec_od_int = 1,
+        predchadzajuci_vybrany_stlpec_do_int = 1000;
     char pomocny_array[100] = {0}, *ptr;
-    char set[1000] = {0}, vybrany_riadok_od_char[1000] = {0}, vybrany_riadok_do_char[1000] = {0}, vybrany_stlpec_od_char[1000] = {0}, vybrany_stlpec_do_char[1000] = {0};
+    char set[1000] = {0};
     int kontrola_R1_C1_R2_C2 = 0;
     while (i < pocet_prikazov) {
         if (prikazy[i][0] == '[') {
             int kontrola_ciarok = 0;
+            j = 1, predchadzajuci_vybrany_riadok_od_int = vybrany_riadok_od_int, predchadzajuci_vybrany_riadok_do_int = vybrany_riadok_do_int,
+            predchadzajuci_vybrany_stlpec_od_int = vybrany_stlpec_od_int,
+            predchadzajuci_vybrany_stlpec_do_int = vybrany_stlpec_do_int;
             while(prikazy[i][j] != ']'){
                 kontrola_R1_C1_R2_C2 = 1;
-                if(prikazy[i][j] == '\0' || !((prikazy[i][j] >= '0' && prikazy[i][j] <= '9') || prikazy[i][j] == ',')){
+                if(prikazy[i][j] == '\0' || (prikazy[i][j] < '0' && prikazy[i][j] != ',') || (prikazy[i][j] > '9')){
                     fprintf(stderr, "%s", "Zly argument!""\n");
                     exit(1);
                 }
@@ -280,6 +285,10 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     kontrola_ciarok++;
                     j++, k = 0;
                     vynuluj(pomocny_array);
+                    if(prikazy[i][j] == ','){
+                        kontrola_R1_C1_R2_C2 = 0;
+                        break;
+                    }
                 }
                 if(kontrola_ciarok > 3){
                     kontrola_R1_C1_R2_C2 = 0;
@@ -291,9 +300,12 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
             //zabezpecime aby sme si nevymazali ulozene cislo predtym nez ho prepiseme
             if(kontrola_R1_C1_R2_C2 == 0){
                 vynuluj(pomocny_array);
+                 vybrany_riadok_od_int = predchadzajuci_vybrany_riadok_od_int, vybrany_riadok_do_int = predchadzajuci_vybrany_riadok_do_int,
+                 vybrany_stlpec_od_int = predchadzajuci_vybrany_stlpec_od_int,
+                 vybrany_stlpec_do_int = predchadzajuci_vybrany_stlpec_do_int;
             }
             // pokial mame argument typu [R1,C1,R2,C2]
-            if(kontrola_R1_C1_R2_C2 == 1){
+            if(kontrola_R1_C1_R2_C2 == 1 && vybrany_riadok_do_int > vybrany_riadok_od_int && vybrany_stlpec_do_int > vybrany_stlpec_od_int){
                 vybrany_stlpec_do_int = strtod(pomocny_array, &ptr);
                 vynuluj(pomocny_array);
             } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',' && prikazy[i][3] == '_' && prikazy[i][4] == ']') { // pokial mame argument typu [_,_]
