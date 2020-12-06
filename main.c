@@ -842,33 +842,36 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                             free(pointer_stlpec);
                             pointer_stlpec = NULL;
                             pointer_riadok->stlpec = pomocny_pointer_stlpec;
-                        } else if(vybrany_stlpec_od == 1) {
+                        } else if (vybrany_stlpec_od == 1) {
                             j = 1;
                             while (pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
-                            pomocny_pointer_stlpec = pointer_stlpec;
-                            pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-                            free(pomocny_pointer_stlpec);
-                            pomocny_pointer_stlpec = NULL;
+                                pomocny_pointer_stlpec = pointer_stlpec;
+                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                                free(pomocny_pointer_stlpec);
+                                pomocny_pointer_stlpec = NULL;
                             }
                             //novy prvy stlpec
                             pointer_riadok->stlpec = pointer_stlpec;
                         } else {
-//                            j = vybrany_stlpec_od;
-//                            while (j++ <= vybrany_stlpec_do ) {
-//                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-//                                // zadany stlpec na vymazanie je mimo rozsahu tabulky
-//                                if (pointer_stlpec == NULL) {
-//                                    return zaciatok;
-//                                }
-                            // zadany stlpec na vymazanie je mimo rozsahu tabulky
-//                            if (pointer_stlpec == NULL) {
-//                                return zaciatok;
-//                            }
-//                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-//                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
-//                            free(pomocny_pointer_stlpec);
-//                            pomocny_pointer_stlpec = NULL;
-
+                            j = 1;
+                            // nastavime sa na o jeden pred stlpec ktory chceme odstranovat
+                            while (j++ < vybrany_stlpec_od - 1) {
+                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                                // zadany stlpec na vymazanie je mimo rozsahu tabulky
+                                if (pointer_stlpec == NULL) {
+                                    return zaciatok;
+                                }
+                            }
+                            j = vybrany_stlpec_od;
+                            STLPEC *p_p_stlpec = NULL;
+                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                            while (pomocny_pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                                p_p_stlpec = pomocny_pointer_stlpec;
+                                pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+                                free(p_p_stlpec);
+                                p_p_stlpec = NULL;
+                            }
+                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
                         }
                     }
                 }
@@ -876,7 +879,7 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
             } while (pointer_riadok != NULL && i++ < vybrany_riadok_do);
         } else {
             i = vybrany_riadok_od;
-            while (pointer_riadok!= NULL && i++ <= vybrany_riadok_do) {
+            while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = NULL;
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
