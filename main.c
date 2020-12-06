@@ -44,15 +44,12 @@ typedef struct riadok {
 } RIADOK;
 
 //todo pretypovat cely program zatial funguje iba 0 - 9
-//todo vsade pridat podmienku if zaciatok null
-//todo skontrolovat strtod na minusove cisla
-//todo funkcia ktora vstup zarovna
 //todo escapovat v prikazoch
 //todo escapovat v texte
 //todo Výběr buněk může přesahovat hranice vstupní tabulky. V takovém případě bude tabulka rozšířena o požadovaný počet řádků a sloupců obsahující prázdné buňky až do aktuálního výběru.
 void vynuluj(char pole[]);
 
-void zarovnaj(RIADOK *zaciatok);
+void zarovnaj(RIADOK *zaciatok, int riadok_do, int  stlpec_do);
 
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
 
@@ -138,7 +135,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void zarovnaj(RIADOK *zaciatok){
+void zarovnaj(RIADOK *zaciatok, int riadok_do, int stlpec_do){
     int max_pocet_stlpcov = -1, pocitadlo = 0;
     if(zaciatok != NULL){
         RIADOK* pomocny_pointer_riadok = zaciatok;
@@ -359,7 +356,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
         while (i < pocet_prikazov) {
-            zarovnaj(zaciatok);
+            zarovnaj(zaciatok, -1, -1);
             if (prikazy[i][0] == '[') {
                 int kontrola_ciarok = 0;
                 j = 1, predchadzajuci_vybrany_riadok_od_int = vybrany_riadok_od_int, predchadzajuci_vybrany_riadok_do_int = vybrany_riadok_do_int,
@@ -561,11 +558,34 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
                     }
-                    //TODO TUTO
-                    riadok = pomocny_array[1] - '0';
-                    stlpec = pomocny_array[3] - '0';
-                    funkcia_swap(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
-                                 vybrany_stlpec_do_int, riadok, stlpec);
+                    int u = 1, r = 0;
+                    char riadok_char[1000] = {0};
+                    char stlpec_char[1000] = {0};
+                    while(pomocny_array[u] != ','){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        riadok_char[r++] = pomocny_array[u++];
+                    }
+                    u++, r = 0;
+                    while(pomocny_array[u] != ']'){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        stlpec_char[r++] = pomocny_array[u++];
+                    }
+                    riadok = strtod(riadok_char, &ptr);
+                    stlpec = strtod(stlpec_char, &ptr);
+                    if(riadok <= 0 || stlpec <= 0) {
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        zaciatok = uvolni(zaciatok);
+                        exit(1);
+                    }
+                    funkcia_swap(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int, vybrany_stlpec_do_int, riadok, stlpec);
                 } else if (strcmp(pomocny_array, "sum") == 0) {
                     k = j, j = 0;
                     vynuluj(pomocny_array);
@@ -573,9 +593,33 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
                     }
-                    //todo tuto
-                    riadok = pomocny_array[1] - '0';
-                    stlpec = pomocny_array[3] - '0';
+                    int u = 1, r = 0;
+                    char riadok_char[1000] = {0};
+                    char stlpec_char[1000] = {0};
+                    while(pomocny_array[u] != ','){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        riadok_char[r++] = pomocny_array[u++];
+                    }
+                    u++, r = 0;
+                    while(pomocny_array[u] != ']'){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        stlpec_char[r++] = pomocny_array[u++];
+                    }
+                    riadok = strtod(riadok_char, &ptr);
+                    stlpec = strtod(stlpec_char, &ptr);
+                    if(riadok <= 0 || stlpec <= 0) {
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        zaciatok = uvolni(zaciatok);
+                        exit(1);
+                    }
                     funkcia_sum(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                 vybrany_stlpec_do_int, riadok, stlpec);
                 } else if (strcmp(pomocny_array, "avg") == 0) {
@@ -585,9 +629,33 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
                     }
-                    //todo tuto
-                    riadok = pomocny_array[1] - '0';
-                    stlpec = pomocny_array[3] - '0';
+                    int u = 1, r = 0;
+                    char riadok_char[1000] = {0};
+                    char stlpec_char[1000] = {0};
+                    while(pomocny_array[u] != ','){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        riadok_char[r++] = pomocny_array[u++];
+                    }
+                    u++, r = 0;
+                    while(pomocny_array[u] != ']'){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        stlpec_char[r++] = pomocny_array[u++];
+                    }
+                    riadok = strtod(riadok_char, &ptr);
+                    stlpec = strtod(stlpec_char, &ptr);
+                    if(riadok <= 0 || stlpec <= 0) {
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        zaciatok = uvolni(zaciatok);
+                        exit(1);
+                    }
                     funkcia_avg(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                 vybrany_stlpec_do_int, riadok, stlpec);
                 } else if (strcmp(pomocny_array, "count") == 0) {
@@ -597,9 +665,33 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
                     }
-                    //todo toto
-                    riadok = pomocny_array[1] - '0';
-                    stlpec = pomocny_array[3] - '0';
+                    int u = 1, r = 0;
+                    char riadok_char[1000] = {0};
+                    char stlpec_char[1000] = {0};
+                    while(pomocny_array[u] != ','){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        riadok_char[r++] = pomocny_array[u++];
+                    }
+                    u++, r = 0;
+                    while(pomocny_array[u] != ']'){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        stlpec_char[r++] = pomocny_array[u++];
+                    }
+                    riadok = strtod(riadok_char, &ptr);
+                    stlpec = strtod(stlpec_char, &ptr);
+                    if(riadok <= 0 || stlpec <= 0) {
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        zaciatok = uvolni(zaciatok);
+                        exit(1);
+                    }
                     funkcia_count(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                   vybrany_stlpec_do_int,
                                   riadok, stlpec);
@@ -610,9 +702,33 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
                     }
-                    //todo tuto
-                    riadok = pomocny_array[1] - '0';
-                    stlpec = pomocny_array[3] - '0';
+                    int u = 1, r = 0;
+                    char riadok_char[1000] = {0};
+                    char stlpec_char[1000] = {0};
+                    while(pomocny_array[u] != ','){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        riadok_char[r++] = pomocny_array[u++];
+                    }
+                    u++, r = 0;
+                    while(pomocny_array[u] != ']'){
+                        if(pomocny_array[u] == '\0'){
+                            fprintf(stderr, "%s", "Zly argument!""\n");
+                            zaciatok = uvolni(zaciatok);
+                            exit(1);
+                        }
+                        stlpec_char[r++] = pomocny_array[u++];
+                    }
+                    riadok = strtod(riadok_char, &ptr);
+                    stlpec = strtod(stlpec_char, &ptr);
+                    if(riadok <= 0 || stlpec <= 0) {
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        zaciatok = uvolni(zaciatok);
+                        exit(1);
+                    }
                     funkcia_len(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                 vybrany_stlpec_do_int, riadok, stlpec);
                 } else {
