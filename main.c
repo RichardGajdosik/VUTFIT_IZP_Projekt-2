@@ -264,27 +264,38 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         if (prikazy[i][0] == '[') {
             int kontrola_ciarok = 0;
             while(prikazy[i][j] != ']'){
+                kontrola_R1_C1_R2_C2 = 1;
                 if(prikazy[i][j] == '\0' || !((prikazy[i][j] >= '0' && prikazy[i][j] <= '9') || prikazy[i][j] == ',')){
                     fprintf(stderr, "%s", "Zly argument!""\n");
                     exit(1);
                 }
                 if(prikazy[i][j] == ','){
+                    if(kontrola_ciarok == 0){
+                        vybrany_riadok_od_int = strtod(pomocny_array, &ptr);
+                    } else if(kontrola_ciarok == 1){
+                        vybrany_stlpec_od_int = strtod(pomocny_array, &ptr);
+                    } else if (kontrola_ciarok == 2){
+                        vybrany_riadok_do_int = strtod(pomocny_array, &ptr);
+                    }
                     kontrola_ciarok++;
                     j++, k = 0;
                     vynuluj(pomocny_array);
                 }
                 if(kontrola_ciarok > 3){
                     kontrola_R1_C1_R2_C2 = 0;
-                    fprintf(stderr, "%s", "Zly argument!""\n");
-                    exit(1);
+                    break;
                 }
                 pomocny_array[k++] = prikazy[i][j++];
             }
             j = 0, k = 0;
-            vynuluj(pomocny_array);
+            //zabezpecime aby sme si nevymazali ulozene cislo predtym nez ho prepiseme
+            if(kontrola_R1_C1_R2_C2 == 0){
+                vynuluj(pomocny_array);
+            }
             // pokial mame argument typu [R1,C1,R2,C2]
             if(kontrola_R1_C1_R2_C2 == 1){
-
+                vybrany_stlpec_do_int = strtod(pomocny_array, &ptr);
+                vynuluj(pomocny_array);
             } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',' && prikazy[i][3] == '_' && prikazy[i][4] == ']') { // pokial mame argument typu [_,_]
                 vybrany_riadok_od_int = 1;
                 vybrany_riadok_do_int = '_';
