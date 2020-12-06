@@ -22,6 +22,7 @@ typedef struct riadok {
 // najst pouzivanie \0 a pouzit funkciu vynuluj
 //todo vsade pridat podmienku if zaciatok null
 //todo skontrolovat strtod na minusove cisla
+//todo funkcia ktora vstup zarovna
 void vynuluj(char pole[]);
 
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
@@ -544,13 +545,15 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok) {
         RIADOK *p = zaciatok;
         STLPEC *f = p->stlpec;
         do {
-            do {
-                printf("%s", f->bunka);
-                if (f->p_dalsi_stlpec != NULL) {
-                    putchar(delimiter);
-                }
-                f = f->p_dalsi_stlpec;
-            } while (f != NULL);                                // vypisujeme dokial je čo vypisovať
+            if (f != NULL) {
+                do {
+                    printf("%s", f->bunka);
+                    if (f->p_dalsi_stlpec != NULL) {
+                        putchar(delimiter);
+                    }
+                    f = f->p_dalsi_stlpec;
+                } while (f != NULL);                                // vypisujeme dokial je čo vypisovať
+            }
             printf("\n");
             p = p->p_dalsi_riadok;
             if (p != NULL) {
@@ -823,6 +826,7 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                 return zaciatok;
             }
         }
+        //todo nastavit sa na spravny stlpec aj
 //TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
         if (vybrany_riadok_od == 1 && vybrany_riadok_do == '_') {
             do {
@@ -838,20 +842,33 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                             free(pointer_stlpec);
                             pointer_stlpec = NULL;
                             pointer_riadok->stlpec = pomocny_pointer_stlpec;
-                        } else {
+                        } else if(vybrany_stlpec_od == 1) {
                             j = 1;
-                            while (j++ < vybrany_stlpec_do - 1) {
-                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-                                // zadany stlpec na vymazanie je mimo rozsahu tabulky
-                                if (pointer_stlpec == NULL) {
-                                    return zaciatok;
-                                }
-                            }
-
-                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+                            while (pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                            pomocny_pointer_stlpec = pointer_stlpec;
+                            pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                             free(pomocny_pointer_stlpec);
                             pomocny_pointer_stlpec = NULL;
+                            }
+                            //novy prvy stlpec
+                            pointer_riadok->stlpec = pointer_stlpec;
+                        } else {
+//                            j = vybrany_stlpec_od;
+//                            while (j++ <= vybrany_stlpec_do ) {
+//                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+//                                // zadany stlpec na vymazanie je mimo rozsahu tabulky
+//                                if (pointer_stlpec == NULL) {
+//                                    return zaciatok;
+//                                }
+                            // zadany stlpec na vymazanie je mimo rozsahu tabulky
+//                            if (pointer_stlpec == NULL) {
+//                                return zaciatok;
+//                            }
+//                            pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+//                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+//                            free(pomocny_pointer_stlpec);
+//                            pomocny_pointer_stlpec = NULL;
+
                         }
                     }
                 }
@@ -859,20 +876,20 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
             } while (pointer_riadok != NULL && i++ < vybrany_riadok_do);
         } else {
             i = vybrany_riadok_od;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
+            while (pointer_riadok!= NULL && i++ <= vybrany_riadok_do) {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = NULL;
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
-                    if (vybrany_stlpec_do == '_') {
+                    if (vybrany_stlpec_od == 1 && vybrany_stlpec_do == '_') {
                         while (pointer_stlpec != NULL) {
                             pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                             free(pointer_stlpec);
                             pointer_stlpec = pomocny_pointer_stlpec;
                         }
+                        pointer_riadok->pocet_stlpcov = 0;
                         //todo potrebujem vymazat cely riadok
                         //TODO ERROR [5,_];dcol
                         pointer_riadok->stlpec = NULL;
-                        return zaciatok;
                     } else {
                         if (vybrany_stlpec_do == 1) {
                             pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
