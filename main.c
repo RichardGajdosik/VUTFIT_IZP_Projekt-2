@@ -1201,7 +1201,7 @@ void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
 }
 
 void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,int *vybrany_stlpec_do) {
-    int i = 1, j = 1, pocet_neprazdnych_buniek = 0;
+    int i = 1, j = 1, pocet_neprazdnych_buniek = 0, x = 1, y = 1;
     //todo spravit cez malloc
     double cislo_double = 0, sucet = 0;
     char STR[MAX] = {0}, *ptr;
