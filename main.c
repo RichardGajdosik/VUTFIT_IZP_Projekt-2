@@ -26,6 +26,8 @@ typedef struct riadok {
 //todo Výběr buněk může přesahovat hranice vstupní tabulky. V takovém případě bude tabulka rozšířena o požadovaný počet řádků a sloupců obsahující prázdné buňky až do aktuálního výběru.
 void vynuluj(char pole[]);
 
+void zarovnaj(RIADOK *zaciatok);
+
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
 
 RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
@@ -86,11 +88,16 @@ int main(int argc, char *argv[]) {
     int i = 1, pocet_prikazov = 0;
     strcpy(meno_suboru, argv[argc - 1]);
     //if podmienka ktora skontroluje ci sa realne nacital delimeter, ak ano i = 3(dalsi argument v poradi)
-    if ((nacitaj_delimiter(argc, argv, &delimiter, delimiter_array))) {
-        i = 3;
+    if (strcmp(argv[1], "-d") == 0){
+        if ((nacitaj_delimiter(argc, argv, &delimiter, delimiter_array))) {
+            i = 3;
+        }
+    } else {
+        delimiter_array[0] = ' ';
     }
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
     pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
+    zarovnaj(zaciatok);
 
 //    i = 0; int j = 0;
 //    while(i < pocet_prikazov){
@@ -101,10 +108,57 @@ int main(int argc, char *argv[]) {
 //        i++, j = 0;
 //    }
 
-    zaciatok = spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
+//    zaciatok = spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
     vypis_tabulku(delimiter, zaciatok);
     zaciatok = uvolni(zaciatok);
     return 0;
+}
+
+void zarovnaj(RIADOK *zaciatok){
+    int max_pocet_stlpcov = -1, pocitadlo = 0;
+    if(zaciatok != NULL){
+        RIADOK* pomocny_pointer_riadok = zaciatok;
+        STLPEC* pomocny_pointer_stlpec = NULL;
+        STLPEC* p_stlpec = NULL;
+        while(pomocny_pointer_riadok != NULL){
+            pomocny_pointer_stlpec = pomocny_pointer_riadok->stlpec;
+            while(pomocny_pointer_stlpec != NULL){
+                pocitadlo++;
+                pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+            }
+            if(max_pocet_stlpcov == -1){
+                max_pocet_stlpcov = pocitadlo;
+            } else {
+                if(max_pocet_stlpcov < pocitadlo){
+                    max_pocet_stlpcov = pocitadlo;
+                }
+            }
+            pocitadlo = 0;
+            pomocny_pointer_riadok = pomocny_pointer_riadok->p_dalsi_riadok;
+        }
+//        printf("%d\n", max_pocet_stlpcov);
+         pomocny_pointer_riadok = zaciatok;
+        pomocny_pointer_stlpec = NULL;
+
+        //zarovname
+        while(pomocny_pointer_riadok != NULL){
+            int i = 0;
+            pomocny_pointer_riadok->pocet_stlpcov = max_pocet_stlpcov;
+            pomocny_pointer_stlpec = pomocny_pointer_riadok->stlpec;
+            while(i < max_pocet_stlpcov){
+                if(pomocny_pointer_stlpec == NULL){
+                    pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+                    pomocny_pointer_stlpec->bunka[0] = '\0';
+                    pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
+                    p_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
+                }
+                i++;
+                p_stlpec = pomocny_pointer_stlpec;
+                pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+            }
+            pomocny_pointer_riadok = pomocny_pointer_riadok->p_dalsi_riadok;
+        }
+    }
 }
 
 void vynuluj(char *pole) {
@@ -116,7 +170,7 @@ void vynuluj(char *pole) {
 }
 
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]) {
-    if (argc > 2 && (strcmp(argv[1], "-d")) == 0) {
+    if (argc > 2 && (strcmp(argv[1], "-d")) == 0 && argv[2][0] != '\'') {
         int i = 0;
         // Nakopirujeme si delimitere do char array-u
         strcpy(delimiter_array, argv[2]);
@@ -157,8 +211,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
             if (c == '\n') {
                 c = getc(fr);
                 temp_stlpec->bunka[i] = '\0';
-                if (p_stlpec ==
-                    NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+                if (p_stlpec == NULL) {
                     p_stlpec = temp_stlpec;
                     temp_riadok->stlpec = p_stlpec;
                 } else {
@@ -169,7 +222,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
                 pomocna_stlpec = 1;
                 j = 0, i = 0;
-                if (zaciatok == NULL) {                                    // ak načítavame prvý film
+                if (zaciatok == NULL) {                                    // ak načítavame prvý riadok
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
@@ -186,7 +239,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
             } else if (c == EOF) {
                 temp_stlpec->bunka[i] = '\0';
                 if (p_stlpec ==
-                    NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+                    NULL) {                                      //ak načítaveme prvý riadok, uložíme jeho adresu
                     p_stlpec = temp_stlpec;
                     temp_riadok->stlpec = p_stlpec;
                 } else {
@@ -194,7 +247,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     p_stlpec = temp_stlpec;
                 }
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
-                if (zaciatok == NULL) {                                    // ak načítavame prvý film
+                if (zaciatok == NULL) {                                    // ak načítavame prvý riadok
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
@@ -211,11 +264,9 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 return zaciatok;
             }
             while (j < (int) strlen(delimiter_array)) {
-                if (c ==
-                    delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
+                if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                     temp_stlpec->bunka[i] = '\0';
-                    if (p_stlpec ==
-                        NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+                    if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
                         p_stlpec = temp_stlpec;
                         temp_riadok->stlpec = p_stlpec;
                     } else {
