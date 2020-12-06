@@ -772,9 +772,9 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
                         f = f->p_dalsi_stlpec;
                     } while (f != NULL);                                // vypisujeme dokial je čo vypisovať
                 }
-                fprintf(fr,"\n");
                 p = p->p_dalsi_riadok;
                 if (p != NULL) {
+                    fprintf(fr,"\n");
                     f = p->stlpec;                                   // nastavíme F na nového prvého herca nového filmu
                 }
             } while (p != NULL);
