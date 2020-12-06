@@ -48,7 +48,7 @@ typedef struct riadok {
 
 void vynuluj(char pole[]);
 
-void zarovnaj(RIADOK *zaciatok, int riadok_do, int  stlpec_do);
+void zarovnaj(RIADOK *zaciatok);
 
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
 
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void zarovnaj(RIADOK *zaciatok, int riadok_do, int stlpec_do){
+void zarovnaj(RIADOK *zaciatok){
     int max_pocet_stlpcov = -1, pocitadlo = 0;
     if(zaciatok != NULL){
         RIADOK* pomocny_pointer_riadok = zaciatok;
@@ -315,36 +315,37 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
 }
 
 int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i) {
-    int j = 0, r = 0, s = 0, kontrola = 0;
-    char pomocny_array[1001] = {0};
+    int j = 0, r = 0, s = 0;
     if(argc > 1000){
         fprintf(stderr, "%s", "Prilis vela prikazov!""\n");
         exit(-1);
     }
-    while (i < argc - 1) {
-        strcpy(pomocny_array, argv[i++]);
-        if((int) strlen(pomocny_array) > 1000){
-            fprintf(stderr, "%s", "Prilis velky prikaz!""\n");
-            exit(-1);
+    while(argv[i][j] != '\0'){
+        if (argv[i][j] == ';') {
+            printf("%s\n", prikazy[r]);
+            r++, j++, s = 0;
         }
-        while (j < (int) strlen(pomocny_array)) {
-            if (pomocny_array[j] == 39) {
-                kontrola++, j++;
-            }
-            if (pomocny_array[j] == ';') {
-                r++, j++, s = 0;
-            }
-            prikazy[r][s++] = pomocny_array[j++];
-        }
-        if (s != 0) {
-            prikazy[r][s++] = ' ';
-        }
-        if (kontrola == 2) {
-            r++;
-            break;
-        }
-        j = 0;
+        prikazy[r][s++] = argv[i][j++];
     }
+
+//    while (i < (int) strlen(argv[i])) {
+//        strcpy(pomocny_array, argv[i++]);
+//        while (j < (int) strlen(pomocny_array)) {
+//            if (pomocny_array[j] == 39) {
+//                kontrola++, j++;
+//            }
+//
+//            prikazy[r][s++] = pomocny_array[j++];
+//        }
+//        if (s != 0) {
+//            prikazy[r][s++] = ' ';
+//        }
+//        if (kontrola == 2) {
+//            r++;
+//            break;
+//        }
+//        j = 0;
+//    }
     return r;
 }
 
@@ -357,7 +358,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
         while (i < pocet_prikazov) {
-            zarovnaj(zaciatok, -1, -1);
+            zarovnaj(zaciatok);
             if (prikazy[i][0] == '[') {
                 int kontrola_ciarok = 0;
                 j = 1, predchadzajuci_vybrany_riadok_od_int = vybrany_riadok_od_int, predchadzajuci_vybrany_riadok_do_int = vybrany_riadok_do_int,
@@ -431,7 +432,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 }
                 if (kontrola_R1_C1_R2_C2 == 1 && vybrany_riadok_do_int > vybrany_riadok_od_int &&
                     vybrany_stlpec_do_int > vybrany_stlpec_od_int) {
-                    zarovnaj(zaciatok, vybrany_riadok_do_int, vybrany_stlpec_do_int);
+                    zarovnaj(zaciatok);
 
                 } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',' && prikazy[i][3] == '_' &&
                            prikazy[i][4] == ']') { // pokial mame argument typu [_,_]
@@ -439,7 +440,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     vybrany_riadok_do_int = '_';
                     vybrany_stlpec_od_int = 1;
                     vybrany_stlpec_do_int = '_';
-                    zarovnaj(zaciatok, vybrany_riadok_do_int, vybrany_stlpec_do_int);
+                    zarovnaj(zaciatok);
                     // pokial mame argument typu [_,int]
                 } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',') {
                     int p = 3;
@@ -456,7 +457,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     k = 0;
                     vynuluj(pomocny_array);
                     // pokial mame argument typu [int,_] alebo [int,int]
-                    zarovnaj(zaciatok, vybrany_riadok_do_int, vybrany_stlpec_do_int);
+                    zarovnaj(zaciatok);
                 } else if (prikazy[i][1] >= '0' && prikazy[i][1] <= '9') {
                     int p = 1;
                     while (prikazy[i][p] != ',') {
@@ -476,7 +477,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     if (prikazy[i][p] == '_') {
                         vybrany_stlpec_od_int = 1;
                         vybrany_stlpec_do_int = '_';
-                        zarovnaj(zaciatok, vybrany_riadok_do_int, vybrany_stlpec_do_int);
+                        zarovnaj(zaciatok);
                         // pokial mame argument typu [int,int]
                     } else {
                         while (prikazy[i][p] != ']') {
@@ -492,7 +493,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
 
                         k = 0;
                         vynuluj(pomocny_array);
-                        zarovnaj(zaciatok, vybrany_riadok_do_int, vybrany_stlpec_do_int);
+                        zarovnaj(zaciatok);
                     }
                 } else if (strcmp(pomocny_array_2, "min") == 0) {
                     funkcia_min(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int,
@@ -500,6 +501,8 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 } else if (strcmp(pomocny_array_2, "max") == 0) {
                     funkcia_max(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int,
                                 &vybrany_stlpec_do_int);
+                } else if (strcmp(pomocny_array_2, "set") == 0) {
+                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
                 } else if (strcmp(pomocny_array_2, "find") == 0) {
                     //plus dva nakolko chcem skocit z posledneho znaku, cez medzeru na string ktory chceme nacitat a vyhladat v tabulke
                     int f = (int) strlen(pomocny_array_2) + 2;
@@ -736,6 +739,12 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     }
                     funkcia_len(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                 vybrany_stlpec_do_int, riadok, stlpec);
+                } else if (strcmp(pomocny_array, "def") == 0) {
+                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                } else if (strcmp(pomocny_array, "use") == 0) {
+                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                } else if (strcmp(pomocny_array, "inc") == 0) {
+                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
                 } else {
                     fprintf(stderr, "%s", "Zly argument!""\n");
                     zaciatok = uvolni(zaciatok);
@@ -750,6 +759,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         }
         return zaciatok;
     }
+    return zaciatok;
 }
 
 void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
@@ -767,14 +777,14 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
                     do {
                         fprintf(fr, "%s", f->bunka);
                         if (f->p_dalsi_stlpec != NULL) {
-                            fprintf(fr,"%c", delimiter);
+                            fprintf(fr, "%c", delimiter);
                         }
                         f = f->p_dalsi_stlpec;
                     } while (f != NULL);                                // vypisujeme dokial je čo vypisovať
                 }
                 p = p->p_dalsi_riadok;
                 if (p != NULL) {
-                    fprintf(fr,"\n");
+                    fprintf(fr, "\n");
                     f = p->stlpec;                                   // nastavíme F na nového prvého herca nového filmu
                 }
             } while (p != NULL);
@@ -932,6 +942,7 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do) {
 //    printf("Success");
         return zaciatok;
     }
+    return zaciatok;
 }
 
 RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
