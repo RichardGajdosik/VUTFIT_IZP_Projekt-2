@@ -826,8 +826,6 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                 return zaciatok;
             }
         }
-        //todo nastavit sa na spravny stlpec aj
-//TODO TATO FUNKCIA SA DA NEJAKYM SIKOVNYM RIESENIM ZJEDNODUSIT
         if (vybrany_riadok_od == 1 && vybrany_riadok_do == '_') {
             do {
                 if (pointer_riadok->stlpec != NULL) {
@@ -890,8 +888,6 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                             pointer_stlpec = pomocny_pointer_stlpec;
                         }
                         pointer_riadok->pocet_stlpcov = 0;
-                        //todo potrebujem vymazat cely riadok
-                        //TODO ERROR [5,_];dcol
                         pointer_riadok->stlpec = NULL;
                     } else {
                         if (vybrany_stlpec_do == 1) {
@@ -899,19 +895,36 @@ dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany
                             free(pointer_stlpec);
                             pointer_stlpec = NULL;
                             pointer_riadok->stlpec = pomocny_pointer_stlpec;
+                        } else if (vybrany_stlpec_od == 1) {
+                            j = 1;
+                            while (pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                                pomocny_pointer_stlpec = pointer_stlpec;
+                                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                                free(pomocny_pointer_stlpec);
+                                pomocny_pointer_stlpec = NULL;
+                            }
+                            //novy prvy stlpec
+                            pointer_riadok->stlpec = pointer_stlpec;
                         } else {
                             j = 1;
-                            while (j++ < vybrany_stlpec_do - 1) {
+                            // nastavime sa na o jeden pred stlpec ktory chceme odstranovat
+                            while (j++ < vybrany_stlpec_od - 1) {
                                 pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                                 // zadany stlpec na vymazanie je mimo rozsahu tabulky
                                 if (pointer_stlpec == NULL) {
                                     return zaciatok;
                                 }
                             }
+                            j = vybrany_stlpec_od;
+                            STLPEC *p_p_stlpec = NULL;
                             pomocny_pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
-                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
-                            free(pomocny_pointer_stlpec);
-                            pomocny_pointer_stlpec = NULL;
+                            while (pomocny_pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                                p_p_stlpec = pomocny_pointer_stlpec;
+                                pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
+                                free(p_p_stlpec);
+                                p_p_stlpec = NULL;
+                            }
+                            pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
                         }
                     }
                 }
