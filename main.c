@@ -25,7 +25,6 @@ typedef struct riadok {
 //todo spravit list vypisu chyb
 //todo DELIM nesmí obsahovat uvozovky ani zpětné lomítko.
 //todo nakodit kontrolu argumentov pretoze akoze fuuu
-//todo čo sa stane ked vstup je prazdna bunka
 //todo pretypovat cely program zatial funguje iba 0 - 9
 //todo napisat funkciu ktora mi skontroluje cisla ci su vacsie ako nula
 //todo pred kazdy exit daj este funkciu na vynulovanie pamate
@@ -76,6 +75,8 @@ void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
                  int vybrany_stlpec_do, int riadok, int stlpec);
 
 void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do);
+
+void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do);
 
 
 int main(int argc, char *argv[]) {
@@ -373,9 +374,9 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     vynuluj(pomocny_array);
                 }
             } else if (strcmp(pomocny_array_2, "min") == 0) {
-                    funkcia_min(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int, &vybrany_stlpec_do_int);
+                funkcia_min(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int, &vybrany_stlpec_do_int);
             } else if (strcmp(pomocny_array_2, "max") == 0) {
-
+                funkcia_max(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int, &vybrany_stlpec_do_int);
             } else if (strcmp(pomocny_array_2, "find") == 0) {
 
             } else {
@@ -1253,6 +1254,76 @@ void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
                             x = i-1;
                             y = j-1;
                             min = pomocne_cislo;
+                            //zapiseme suradnice xy
+                        }
+                    }
+                    pomocne_cislo = 0;
+                }
+                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+            j = 1;
+            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+        }
+        if(x != -1 && y !=-1){
+            *vybrany_riadok_od = *vybrany_riadok_do = x;
+            *vybrany_stlpec_od = *vybrany_stlpec_do = y;
+        }
+    }
+}
+
+void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do){
+    int i = 1, j = 1, x = -1, y = -1;
+    double pomocne_cislo = 0,  max = -1;
+    //todo spravit cez malloc
+    char STR[MAX] = {0}, *ptr;
+    if (zaciatok != NULL) {
+        RIADOK *pointer_riadok = zaciatok;
+        STLPEC *pointer_stlpec = NULL;
+
+        while (i++ < *vybrany_riadok_od) {
+            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            if (pointer_riadok == NULL) {
+                //mimo rozsah
+                return;
+            }
+        }
+        i = *vybrany_riadok_od;
+
+        // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
+        while (pointer_riadok != NULL && i++ <= *vybrany_riadok_do) {
+            pointer_stlpec = pointer_riadok->stlpec;
+            while (j++ < *vybrany_stlpec_od) {
+                if (pointer_stlpec == NULL) {
+                    if (pointer_riadok->p_dalsi_riadok != NULL) {
+                        pointer_riadok = pointer_riadok->p_dalsi_riadok;
+                        pointer_stlpec = pointer_riadok->stlpec;
+                        j = 1, i++;
+                        continue;
+                    } else {
+                        return;
+                    }
+                }
+                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+            j = *vybrany_stlpec_od;
+
+            while (pointer_stlpec != NULL && j++ <= *vybrany_stlpec_do) {
+                if (pointer_stlpec->bunka[0] != '\0') {
+                    strcpy(STR, pointer_stlpec->bunka);
+                    // Prevedieme si string na float cislo
+                    pomocne_cislo = strtod(STR, &ptr);
+                    // Pretypujeme na int
+                    STR[0] = '\0';
+                    //zapiseme najmensie cislo
+                    if(max == -1 && pomocne_cislo != 0){
+                        max = pomocne_cislo;
+                        x = i-1;
+                        y = j-1;
+                    } else if (pomocne_cislo != 0){
+                        if(max < pomocne_cislo){
+                            x = i-1;
+                            y = j-1;
+                            max = pomocne_cislo;
                             //zapiseme suradnice xy
                         }
                     }
