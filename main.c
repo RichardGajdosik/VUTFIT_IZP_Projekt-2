@@ -1201,9 +1201,9 @@ void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
 }
 
 void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,int *vybrany_stlpec_do) {
-    int i = 1, j = 1, pocet_neprazdnych_buniek = 0, x = 1, y = 1;
+    int i = 1, j = 1, x = 1, y = 1;
+    double pomocne_cislo = 0,  min = -1;
     //todo spravit cez malloc
-    double cislo_double = 0, sucet = 0;
     char STR[MAX] = {0}, *ptr;
     if (zaciatok != NULL) {
         RIADOK *pointer_riadok = zaciatok;
@@ -1238,14 +1238,33 @@ void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
 
             while (pointer_stlpec != NULL && j++ <= *vybrany_stlpec_do) {
                 if (pointer_stlpec->bunka[0] != '\0') {
-                    pocet_neprazdnych_buniek += (int) strlen(pointer_stlpec->bunka);
+                    strcpy(STR, pointer_stlpec->bunka);
+                    // Prevedieme si string na float cislo
+                    pomocne_cislo = strtod(STR, &ptr);
+                    // Pretypujeme na int
+                    STR[0] = '\0';
+                    //zapiseme najmensie cislo
+                    if(min == -1 && pomocne_cislo != 0){
+                        min = pomocne_cislo;
+                        x = i-1;
+                        y = j-1;
+                    } else if (pomocne_cislo != 0){
+                        if(min > pomocne_cislo){
+                            x = i-1;
+                            y = j-1;
+                            min = pomocne_cislo;
+                            //zapiseme suradnice xy
+                        }
+                    }
+                    pomocne_cislo = 0;
                 }
                 pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
             }
             j = 1;
             pointer_riadok = pointer_riadok->p_dalsi_riadok;
         }
-        sprintf(STR, "%d", pocet_neprazdnych_buniek);
+        *vybrany_riadok_od = *vybrany_riadok_do = x;
+        *vybrany_stlpec_od = *vybrany_stlpec_do = y;
     }
 }
 
