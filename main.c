@@ -78,6 +78,8 @@ void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
 
 void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do);
 
+void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do, char pomocny_array_2[]);
+
 
 int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
@@ -378,7 +380,20 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
             } else if (strcmp(pomocny_array_2, "max") == 0) {
                 funkcia_max(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int, &vybrany_stlpec_do_int);
             } else if (strcmp(pomocny_array_2, "find") == 0) {
-
+                //plus dva nakolko chcem skocit z posledneho znaku, cez medzeru na string ktory chceme nacitat a vyhladat v tabulke
+                int f = (int)strlen(pomocny_array_2) + 2;
+                k = 0;
+                vynuluj(pomocny_array_2);
+                while (prikazy[i][f] != ']' ) {
+                    if(prikazy[i][f] == '\0'){
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        exit(1);
+                    }
+                    pomocny_array_2[k++] = prikazy[i][f++];
+                }
+                k = 0;
+                funkcia_find(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int, &vybrany_stlpec_do_int, pomocny_array_2);
+                vynuluj(pomocny_array_2);
             } else {
                 fprintf(stderr, "%s", "Zly argument!""\n");
                 exit(1);
@@ -1340,6 +1355,58 @@ void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
         }
     }
 }
+
+void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od, int *vybrany_stlpec_do, char pomocny_array_2[]){
+    int i = 1, j = 1, x = -1, y = -1;
+    //todo spravit cez malloc
+    if (zaciatok != NULL) {
+        RIADOK *pointer_riadok = zaciatok;
+        STLPEC *pointer_stlpec = NULL;
+
+        while (i++ < *vybrany_riadok_od) {
+            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            if (pointer_riadok == NULL) {
+                //mimo rozsah
+                return;
+            }
+        }
+        i = *vybrany_riadok_od;
+
+        // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
+        while (pointer_riadok != NULL && i++ <= *vybrany_riadok_do) {
+            pointer_stlpec = pointer_riadok->stlpec;
+            while (j++ < *vybrany_stlpec_od) {
+                if (pointer_stlpec == NULL) {
+                    if (pointer_riadok->p_dalsi_riadok != NULL) {
+                        pointer_riadok = pointer_riadok->p_dalsi_riadok;
+                        pointer_stlpec = pointer_riadok->stlpec;
+                        j = 1, i++;
+                        continue;
+                    } else {
+                        return;
+                    }
+                }
+                pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+            j = *vybrany_stlpec_od;
+
+            while (pointer_stlpec != NULL && j++ <= *vybrany_stlpec_do) {
+                if (pointer_stlpec->bunka[0] != '\0') {
+                    if (strcmp(pomocny_array_2, pointer_stlpec->bunka) == 0) {
+                        x = i - 1;
+                        y = j - 1;
+                        *vybrany_riadok_od = *vybrany_riadok_do = x;
+                        *vybrany_stlpec_od = *vybrany_stlpec_do = y;
+                    }
+                }
+                    pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+            }
+                j = 1;
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            }
+    }
+}
+
 
 RIADOK *uvolni(RIADOK *zaciatok) {
     if (zaciatok != NULL) {
