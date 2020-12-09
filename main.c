@@ -44,11 +44,7 @@ typedef struct riadok {
 } RIADOK;
 
 
-
-//todo nekontrolujem ci nahodou vyber riadku stlpca neni nula
 //todo komentare dat prec dlzne a makcene
-//todo niekde _ niekde 1000 tak sa rozhodni
-//todo vynulovať 2d array docasna_premenna_char
 //todo pridat malloc check
 void vynuluj(char pole[]);
 
@@ -293,7 +289,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
                 p_stlpec = NULL;
 //                printf("Koniec!\n");
                 if (fclose(fr) == EOF) {
@@ -304,23 +300,23 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 return zaciatok;
             }
             if(kontrola_uvodzoviek == 0){
-            while (j < (int) strlen(delimiter_array)) {
-                if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
-                    temp_stlpec->bunka[i] = '\0';
-                    if (p_stlpec == NULL) {                                      //ak naÄA­taveme prvAŠho herca, uloLžA­me jeho adresu do temp_film->herec
-                        p_stlpec = temp_stlpec;
-                        temp_riadok->stlpec = p_stlpec;
-                    } else {
-                        p_stlpec->p_dalsi_stlpec = temp_stlpec;
-                        p_stlpec = temp_stlpec;
+                while (j < (int) strlen(delimiter_array)) {
+                    if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
+                        temp_stlpec->bunka[i] = '\0';
+                        if (p_stlpec == NULL) {                                      //ak naÄA­taveme prvAŠho herca, uloLžA­me jeho adresu do temp_film->herec
+                            p_stlpec = temp_stlpec;
+                            temp_riadok->stlpec = p_stlpec;
+                        } else {
+                            p_stlpec->p_dalsi_stlpec = temp_stlpec;
+                            p_stlpec = temp_stlpec;
+                        }
+                        temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+                        pomocna_stlpec += 1;
+                        i = 0, kontrola = 1;
+                        break;
                     }
-                    temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
-                    pomocna_stlpec += 1;
-                    i = 0, kontrola = 1;
-                    break;
+                    j++;
                 }
-                j++;
-            }
             }
             if (kontrola == 1) {
                 kontrola = 0;
@@ -377,9 +373,15 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char pomocny_array[1000] = {0}, pomocny_array_2[1000] = {0}, *ptr;
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
-        char docasna_premenna_char[10][1000];
+        char docasna_premenna_char[10][1000] = {0};
         int docasna_premenna_int[10];
         while (i <= pocet_prikazov) {
+            if (vybrany_riadok_do_int <= 0 || vybrany_riadok_od_int <= 0 ||
+                vybrany_stlpec_do_int <= 0 || vybrany_stlpec_od_int <= 0) {
+                fprintf(stderr, "%s", "Vyber riadku alebo stlpcu je nula!""\n");
+                uvolni(zaciatok);
+                exit(-1);
+            }
             zarovnaj(zaciatok);
             if (prikazy[i][0] == '[') {
                 if(prikazy[i][1] == '_' && prikazy[i][2] == ']'){
@@ -456,11 +458,6 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 }
                 vynuluj(pomocny_array);
                 // pokial mame argument typu [R1,C1,R2,C2]
-                if (vybrany_riadok_do_int <= 0 || vybrany_riadok_od_int <= 0 ||
-                    vybrany_stlpec_do_int <= 0 || vybrany_stlpec_od_int <= 0) {
-                    fprintf(stderr, "%s", "Vyber riadku alebo stlpcu je nula!""\n");
-                    exit(-1);
-                }
                 if (kontrola_R1_C1_R2_C2 == 1 && vybrany_riadok_do_int >= vybrany_riadok_od_int &&
                     vybrany_stlpec_do_int >= vybrany_stlpec_od_int) {
                     zarovnaj(zaciatok);
