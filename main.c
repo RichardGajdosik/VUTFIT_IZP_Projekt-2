@@ -43,13 +43,12 @@ typedef struct riadok {
     struct riadok *p_dalsi_riadok;
 } RIADOK;
 
-//todo escapovat v prikazoch
-//todo escapovat v texte
+
+
 //todo nekontrolujem ci nahodou vyber riadku stlpca neni nula
 //todo komentare dat prec dlzne a makcene
 //todo niekde _ niekde 1000 tak sa rozhodni
-/* Vybrané příkazy mohou akceptovat parametr jako řetězec označovaný STR. Na takový řetězec se vztahují stejná pravidla jako na textový obsah buňky specifikovaný v odstavci popisující formát tabulky (tj. může být v uvozovkách, může obsahovat speciální znaky uvozené zpětným lomítkem).*/
-//todo vynulovať 2d array docasna_premenna
+//todo vynulovať 2d array docasna_premenna_char
 void vynuluj(char pole[]);
 
 void zarovnaj(RIADOK *zaciatok);
@@ -544,6 +543,9 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     k = 0;
                     vynuluj(pomocny_array_2);
                     while (prikazy[i][f] != ']') {
+                        if (prikazy[i][f] == '\\' && prikazy[i][f+1] != ']'){
+                            f++;
+                        }
                         if (prikazy[i][f] == '\0') {
                             fprintf(stderr, "%s", "Zly argument!""\n");
                             zaciatok = uvolni(zaciatok);
@@ -586,6 +588,12 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                         vynuluj(pomocny_array);
                         j = k, k = 0, j++;
                         while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
+                            if (prikazy[i][j] == '\\'){
+                                j++;
+                            }
+                            if(prikazy[i][j] == '\0'){
+                                break;
+                            }
                             pomocny_array[k++] = prikazy[i][j++];
                         }
                         strcpy(set, pomocny_array);
