@@ -49,7 +49,7 @@ typedef struct riadok {
 //todo komentare dat prec dlzne a makcene
 //todo niekde _ niekde 1000 tak sa rozhodni
 /* Vybrané příkazy mohou akceptovat parametr jako řetězec označovaný STR. Na takový řetězec se vztahují stejná pravidla jako na textový obsah buňky specifikovaný v odstavci popisující formát tabulky (tj. může být v uvozovkách, může obsahovat speciální znaky uvozené zpětným lomítkem).*/
-//todo niektore commandy nefunguju kvôli tomu ze sa furt posuvaju v commandoch akokeby to robim na windowse
+//todo vynulovať 2d array docasna_premenna
 void vynuluj(char pole[]);
 
 void zarovnaj(RIADOK *zaciatok);
@@ -105,6 +105,8 @@ void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
 
 void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,
                   int *vybrany_stlpec_do, char pomocny_array_2[]);
+
+void funkcia_def(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od, int vybrany_stlpec_do, char *set);
 
 
 int main(int argc, char *argv[]) {
@@ -372,6 +374,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char pomocny_array[1000] = {0}, pomocny_array_2[1000] = {0}, *ptr;
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
+        char docasna_premenna[10][1000];
         while (i <= pocet_prikazov) {
             zarovnaj(zaciatok);
             if (prikazy[i][0] == '[') {
@@ -759,9 +762,46 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     funkcia_len(zaciatok, vybrany_riadok_od_int, vybrany_riadok_do_int, vybrany_stlpec_od_int,
                                 vybrany_stlpec_do_int, riadok, stlpec);
                 } else if (strcmp(pomocny_array, "def") == 0) {
-                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                    k = j, j = 0;
+                    vynuluj(pomocny_array);
+                    // j+2 pretože chceme preskočiť _
+                    j = k, k = 0, j+=2;
+                    while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
+                        pomocny_array[k++] = prikazy[i][j++];
+                    }
+                    k = strtod(pomocny_array, &ptr);
+                    vynuluj(pomocny_array);
+                    vynuluj(set);
+//                    printf("%d\n", k);
+                    if(!(k >= 0 && k <= 9)){
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        exit(-1);
+                    }
+                    funkcia_def(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
+                                vybrany_stlpec_do_int, set);
+                    strcpy(docasna_premenna[k], set);
+//                    printf("%s\n", docasna_premenna[k]);
+                    vynuluj(set);
+                    k = 0;
                 } else if (strcmp(pomocny_array, "use") == 0) {
-                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                    k = j, j = 0;
+                    vynuluj(pomocny_array);
+                    // j+2 pretože chceme preskočiť _
+                    j = k, k = 0, j+=2;
+                    while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
+                        pomocny_array[k++] = prikazy[i][j++];
+                    }
+                    k = strtod(pomocny_array, &ptr);
+                    vynuluj(pomocny_array);
+                    vynuluj(set);
+                    if(!(k >= 0 && k <= 9)){
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        exit(-1);
+                    }
+                    strcpy(set, docasna_premenna[k]);
+                    funkcia_set(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
+                                vybrany_stlpec_do_int, set);
+                    vynuluj(set);
                 } else if (strcmp(pomocny_array, "inc") == 0) {
                     fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
                 } else {
@@ -1737,6 +1777,51 @@ void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_
                             *vybrany_stlpec_od = *vybrany_stlpec_do = y;
                         }
                     }
+                    pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                }
+                j = 1;
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+            }
+        }
+    }
+}
+
+void funkcia_def(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od, int vybrany_stlpec_do, char *set) {
+    if (zaciatok != NULL) {
+        int i = 1, j = 1;
+        if (zaciatok != NULL) {
+            RIADOK *pointer_riadok = zaciatok;
+            STLPEC *pointer_stlpec = NULL;
+
+            while (i++ < vybrany_riadok_od) {
+                pointer_riadok = pointer_riadok->p_dalsi_riadok;
+                if (pointer_riadok == NULL) {
+                    //mimo rozsah
+                    return;
+                }
+            }
+            i = vybrany_riadok_od;
+
+            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
+            while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
+                pointer_stlpec = pointer_riadok->stlpec;
+                while (j++ < vybrany_stlpec_od) {
+                    if (pointer_stlpec == NULL) {
+                        if (pointer_riadok->p_dalsi_riadok != NULL) {
+                            pointer_riadok = pointer_riadok->p_dalsi_riadok;
+                            pointer_stlpec = pointer_riadok->stlpec;
+                            j = 1, i++;
+                            continue;
+                        } else {
+                            return;
+                        }
+                    }
+                    pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
+                }
+                j = vybrany_stlpec_od;
+
+                while (pointer_stlpec != NULL && j++ <= vybrany_stlpec_do) {
+                    strcpy(set, pointer_stlpec->bunka);
                     pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
                 }
                 j = 1;
