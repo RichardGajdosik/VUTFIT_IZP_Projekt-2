@@ -232,15 +232,15 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
         do {                              // while cyklus sa vykonava dokym nenarazi na koniec suboru
             c = getc(fr);
             // escapujeme \ */
-//            if (c == '\\'){
-//                c = getc(fr);
-//            }
-//            if (c == '"'){
-//                kontrola_uvodzoviek++;
-//                if(kontrola_uvodzoviek == 2){
-//                    kontrola_uvodzoviek = 0;
-//                }
-//            }
+            if (c == '\\'){
+                c = getc(fr);
+            }
+            if (c == '"'){
+                kontrola_uvodzoviek++;
+                if(kontrola_uvodzoviek == 2){
+                    kontrola_uvodzoviek = 0;
+                }
+            }
             if (c == '\n') {
                 c = getc(fr);
                 temp_stlpec->bunka[i] = '\0';
@@ -297,7 +297,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 }
                 return zaciatok;
             }
-//            if(kontrola_uvodzoviek == 0){
+            if(kontrola_uvodzoviek == 0){
             while (j < (int) strlen(delimiter_array)) {
                 if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                     temp_stlpec->bunka[i] = '\0';
@@ -315,7 +315,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 }
                 j++;
             }
-//            }
+            }
             if (kontrola == 1) {
                 kontrola = 0;
             } else {
