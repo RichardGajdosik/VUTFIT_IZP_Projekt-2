@@ -170,6 +170,11 @@ void zarovnaj(RIADOK *zaciatok){
             while(i < max_pocet_stlpcov){
                 if(pomocny_pointer_stlpec == NULL){
                     pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+                    if(pomocny_pointer_stlpec == NULL){
+                        fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                        uvolni(zaciatok);
+                        exit(-1);
+                    }
                     pomocny_pointer_stlpec->bunka[0] = '\0';
                     pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
                     p_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
@@ -226,8 +231,18 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
         char c = 0;
         int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1, kontrola = 0, kontrola_uvodzoviek = 0;
         temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
+        if(temp_riadok == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
         temp_riadok->p_dalsi_riadok = NULL;
         temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+        if(temp_stlpec == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
         do {                              // while cyklus sa vykonava dokym nenarazi na koniec suboru
             c = getc(fr);
             // escapujeme \ */
@@ -251,6 +266,13 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     p_stlpec = temp_stlpec;
                 }
                 temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                if(temp_stlpec == NULL){
+                    fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                    uvolni(zaciatok);
+                    exit(-1);
+                }
+
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
                 pomocna_stlpec = 1;
                 j = 0, i = 0;
@@ -266,6 +288,13 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
+
+                if(temp_riadok == NULL){
+                    fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                    uvolni(zaciatok);
+                    exit(-1);
+                }
+
                 temp_riadok->stlpec = temp_stlpec;
                 temp_riadok->p_dalsi_riadok = NULL;
             } else if (c == EOF) {
@@ -311,6 +340,13 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                             p_stlpec = temp_stlpec;
                         }
                         temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                        if(temp_stlpec == NULL){
+                            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                            uvolni(zaciatok);
+                            exit(-1);
+                        }
+
                         pomocna_stlpec += 1;
                         i = 0, kontrola = 1;
                         break;
@@ -904,10 +940,24 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_od) {
     if (zaciatok != NULL) {
         int i = 1;
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
+
+        if(pomocny_pointer_riadok == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
+
         RIADOK *pointer_riadok = NULL;
         pomocny_pointer_riadok->p_dalsi_riadok = NULL;
 
         STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+        if(pomocny_pointer_stlpec == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
+
         STLPEC *pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->pocet_stlpcov = zaciatok->pocet_stlpcov;
@@ -918,6 +968,13 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_od) {
         pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
         while (i++ < zaciatok->pocet_stlpcov) {
             pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+            if(pomocny_pointer_stlpec == NULL){
+                fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                uvolni(zaciatok);
+                exit(-1);
+            }
+
             pomocny_pointer_stlpec->bunka[0] = '\0';
             pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
             pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
@@ -944,10 +1001,24 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do) {
     if (zaciatok != NULL) {
         int i = 1;
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
+
+        if(pomocny_pointer_riadok == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
+
         RIADOK *pointer_riadok = NULL;
         pomocny_pointer_riadok->p_dalsi_riadok = NULL;
 
         STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+        if(pomocny_pointer_stlpec == NULL){
+            fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+            uvolni(zaciatok);
+            exit(-1);
+        }
+
         STLPEC *pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->pocet_stlpcov = zaciatok->pocet_stlpcov;
@@ -958,6 +1029,13 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do) {
         pomocny_pointer_stlpec = pomocny_pointer_stlpec->p_dalsi_stlpec;
         while (i++ < zaciatok->pocet_stlpcov) {
             pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+            if(pomocny_pointer_stlpec == NULL){
+                fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                uvolni(zaciatok);
+                exit(-1);
+            }
+
             pomocny_pointer_stlpec->bunka[0] = '\0';
             pomocny_pointer_stlpec->p_dalsi_stlpec = NULL;
             pointer_stlpec->p_dalsi_stlpec = pomocny_pointer_stlpec;
@@ -1060,6 +1138,13 @@ RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
             do {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                    if(pomocny_pointer_stlpec == NULL){
+                        fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                        uvolni(zaciatok);
+                        exit(-1);
+                    }
+
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                     pointer_riadok->pocet_stlpcov++;
 
@@ -1086,6 +1171,13 @@ RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
             }
             if (pointer_riadok->stlpec != NULL) {
                 STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                if(pomocny_pointer_stlpec == NULL){
+                    fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                    uvolni(zaciatok);
+                    exit(-1);
+                }
+
                 STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                 pointer_riadok->pocet_stlpcov++;
                 if (vybrany_stlpec_do == 1 || vybrany_stlpec_do == '_') {
@@ -1114,6 +1206,13 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
             do {
                 if (pointer_riadok->stlpec != NULL) {
                     STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                    if(pomocny_pointer_stlpec == NULL){
+                        fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                        uvolni(zaciatok);
+                        exit(-1);
+                    }
+
                     STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                     pointer_riadok->pocet_stlpcov++;
 
@@ -1135,6 +1234,13 @@ RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do) {
             }
             if (pointer_riadok->stlpec != NULL) {
                 STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
+
+                if(pomocny_pointer_stlpec == NULL){
+                    fprintf(stderr, "%s", "Nepodarilo sa alokovat pamat!");
+                    uvolni(zaciatok);
+                    exit(-1);
+                }
+
                 STLPEC *pointer_stlpec = pointer_riadok->stlpec;
                 pointer_riadok->pocet_stlpcov++;
 
