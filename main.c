@@ -48,7 +48,8 @@ typedef struct riadok {
 //todo nekontrolujem ci nahodou vyber riadku stlpca neni nula
 //todo komentare dat prec dlzne a makcene
 //todo niekde _ niekde 1000 tak sa rozhodni
-
+/* Vybrané příkazy mohou akceptovat parametr jako řetězec označovaný STR. Na takový řetězec se vztahují stejná pravidla jako na textový obsah buňky specifikovaný v odstavci popisující formát tabulky (tj. může být v uvozovkách, může obsahovat speciální znaky uvozené zpětným lomítkem).*/
+//todo niektore commandy nefunguju kvôli tomu ze sa furt posuvaju v commandoch akokeby to robim na windowse
 void vynuluj(char pole[]);
 
 void zarovnaj(RIADOK *zaciatok);
