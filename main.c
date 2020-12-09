@@ -45,7 +45,6 @@ typedef struct riadok {
 
 
 //todo komentare dat prec dlzne a makcene
-//todo pridat malloc check
 void vynuluj(char pole[]);
 
 void zarovnaj(RIADOK *zaciatok);
@@ -54,7 +53,7 @@ int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_ar
 
 RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
 
-int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i);
+int nacitaj_prikazy(char *argv[], char prikazy[][1000], int i);
 
 RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov);
 
@@ -119,7 +118,7 @@ int main(int argc, char *argv[]) {
     }
     strcpy(meno_suboru, argv[argc - 1]);
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
-    pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
+    pocet_prikazov = nacitaj_prikazy(argv, prikazy, i);
 
 //    i = 0; int j = 0;
 //    while(i < pocet_prikazov){
@@ -366,38 +365,20 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
     return zaciatok;
 }
 
-int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i) {
+int nacitaj_prikazy(char *argv[], char prikazy[][1000], int i) {
     int j = 0, r = 0, s = 0;
-    if(argc > 1000){
-        fprintf(stderr, "%s", "Prilis vela prikazov!""\n");
-        exit(-1);
-    }
+
     while(argv[i][j] != '\0'){
         if (argv[i][j] == ';') {
 //            printf("%s\n", prikazy[r]);
             r++, j++, s = 0;
+            if(r > 1000){
+                fprintf(stderr, "%s", "Prilis vela prikazov!""\n");
+                exit(-1);
+            }
         }
         prikazy[r][s++] = argv[i][j++];
     }
-
-//    while (i < (int) strlen(argv[i])) {
-//        strcpy(pomocny_array, argv[i++]);
-//        while (j < (int) strlen(pomocny_array)) {
-//            if (pomocny_array[j] == 39) {
-//                kontrola++, j++;
-//            }
-//
-//            prikazy[r][s++] = pomocny_array[j++];
-//        }
-//        if (s != 0) {
-//            prikazy[r][s++] = ' ';
-//        }
-//        if (kontrola == 2) {
-//            r++;
-//            break;
-//        }
-//        j = 0;
-//    }
     return r;
 }
 
