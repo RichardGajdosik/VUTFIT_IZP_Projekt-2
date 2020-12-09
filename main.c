@@ -445,9 +445,13 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     fprintf(stderr, "%s", "Vyber riadku alebo stlpcu je nula!""\n");
                     exit(-1);
                 }
-                if (kontrola_R1_C1_R2_C2 == 1 && vybrany_riadok_do_int > vybrany_riadok_od_int &&
-                    vybrany_stlpec_do_int > vybrany_stlpec_od_int) {
+                if (kontrola_R1_C1_R2_C2 == 1 && vybrany_riadok_do_int >= vybrany_riadok_od_int &&
+                    vybrany_stlpec_do_int >= vybrany_stlpec_od_int) {
                     zarovnaj(zaciatok);
+                    i++, j = 0, k = 0;
+                    vynuluj(pomocny_array);
+                    j = 0;
+                    continue;
 
                 } else if (prikazy[i][1] == '_' && prikazy[i][2] == ',' && prikazy[i][3] == '_' &&
                            prikazy[i][4] == ']') { // pokial mame argument typu [_,_]
