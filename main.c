@@ -1,31 +1,31 @@
 /*
- * IDE CLion - Richard Gajdošík
+ * IDE CLion - Richard GajdoLAA­k
  * Implementacia druheho projektu z predmetu IZP, zimny semester, skolsky rok 20/21
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Command list * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * [R,C] - výběr buňky na řádku R a sloupci C.
- * [R,_] - výběr celého řádku R.
- * [_,C] - výběr celého sloupce C.
- * [R1,C1,R2,C2] - výběr okna, tj. všech buněk na řádku R a sloupci C, pro které platí R1 <= R <= R2, C1 <= C <= C2. Pokud namísto čísla R2 resp. C2 bude pomlčka, nahrazuje tak maximální řádek resp. sloupec v tabulce.
- * [_,_] - výběr celé tabulky.
- * [min] - v již existujícím výběru buněk najde buňku s minimální numerickou hodnotou a výběr nastaví na ni.
- * [max] - obdobně jako předchozí příkaz, ale najde buňku s maximální hodnotou.
- * [find STR] - v již existujícím výběru buněk vybere první buňku, jejíž hodnota obsahuje podřetězec STR.
- *       Příkazy pro úpravu struktury tabulky
- * irow - vloží jeden prázdný řádek nalevo od vybraných buněk nad vybrané buňky.
- * arow - přidá jeden prázdný řádek napravo od vybraných buněk pod vybrané buňky.
- * drow - odstraní vybrané řádky.
- * icol - vloží jeden prázdný sloupec nalevo od vybraných buněk.
- * acol - přidá jeden prázdný sloupec napravo od vybraných buněk.
- * dcol - odstraní vybrané sloupce.
- *       Příkazy pro úpravu obsahu buněk
- * set STR - nastaví hodnotu buňky na řetězec STR. Řetězec STR může být ohraničen uvozovkami a může obsahovat speciální znaky uvozené lomítkem (viz formát tabulky)
- * clear - obsah vybraných buněk bude odstraněn (buňky budou mít prázdný obsah)
- * swap [R,C] - vymění obsah vybrané buňky s buňkou na řádku R a sloupci C
- * sum [R,C] - do buňky na řádku R a sloupci C uloží součet hodnot vybraných buněk (odpovídající formátu %g u printf). Vybrané buňky neobsahující číslo budou ignorovány (jako by vybrány nebyly).
- * avg [R,C] - stejné jako sum, ale ukládá se aritmetický průměr z vybraných buněk
- * count [R,C] - stejné jako sum, ale ukládá se počet neprázdných buněk z vybraných buněk
- * len [R,C] - do buňky na řádku R a sloupci C uloží délku řetězce aktuálně vybrané buňky
+ * [R,C] - vA?bÄ?r buL?ky na L?AAdku R a sloupci C.
+ * [R,_] - vA?bÄ?r celAŠho L?AAdku R.
+ * [_,C] - vA?bÄ?r celAŠho sloupce C.
+ * [R1,C1,R2,C2] - vA?bÄ?r okna, tj. vLAech bunÄ?k na L?AAdku R a sloupci C, pro kterAŠ platA­ R1 <= R <= R2, C1 <= C <= C2. Pokud namA­sto ÄA­sla R2 resp. C2 bude pomlÄka, nahrazuje tak maximAAlnA­ L?AAdek resp. sloupec v tabulce.
+ * [_,_] - vA?bÄ?r celAŠ tabulky.
+ * [min] - v jiLž existujA­cA­m vA?bÄ?ru bunÄ?k najde buL?ku s minimAAlnA­ numerickou hodnotou a vA?bÄ?r nastavA­ na ni.
+ * [max] - obdobnÄ? jako pL?edchozA­ pL?A­kaz, ale najde buL?ku s maximAAlnA­ hodnotou.
+ * [find STR] - v jiLž existujA­cA­m vA?bÄ?ru bunÄ?k vybere prvnA­ buL?ku, jejA­Lž hodnota obsahuje podL?etÄ?zec STR.
+ *       PL?A­kazy pro Aspravu struktury tabulky
+ * irow - vloLžA­ jeden prAAzdnA? L?AAdek nalevo od vybranA?ch bunÄ?k nad vybranAŠ buL?ky.
+ * arow - pL?idAA jeden prAAzdnA? L?AAdek napravo od vybranA?ch bunÄ?k pod vybranAŠ buL?ky.
+ * drow - odstranA­ vybranAŠ L?AAdky.
+ * icol - vloLžA­ jeden prAAzdnA? sloupec nalevo od vybranA?ch bunÄ?k.
+ * acol - pL?idAA jeden prAAzdnA? sloupec napravo od vybranA?ch bunÄ?k.
+ * dcol - odstranA­ vybranAŠ sloupce.
+ *       PL?A­kazy pro Aspravu obsahu bunÄ?k
+ * set STR - nastavA­ hodnotu buL?ky na L?etÄ?zec STR. L?etÄ?zec STR mLZLže bA?t ohraniÄen uvozovkami a mLZLže obsahovat speciAAlnA­ znaky uvozenAŠ lomA­tkem (viz formAAt tabulky)
+ * clear - obsah vybranA?ch bunÄ?k bude odstranÄ?n (buL?ky budou mA­t prAAzdnA? obsah)
+ * swap [R,C] - vymÄ?nA­ obsah vybranAŠ buL?ky s buL?kou na L?AAdku R a sloupci C
+ * sum [R,C] - do buL?ky na L?AAdku R a sloupci C uloLžA­ souÄet hodnot vybranA?ch bunÄ?k (odpovA­dajA­cA­ formAAtu %g u printf). VybranAŠ buL?ky neobsahujA­cA­ ÄA­slo budou ignorovAAny (jako by vybrAAny nebyly).
+ * avg [R,C] - stejnAŠ jako sum, ale uklAAdAA se aritmetickA? prLZmÄ?r z vybranA?ch bunÄ?k
+ * count [R,C] - stejnAŠ jako sum, ale uklAAdAA se poÄet neprAAzdnA?ch bunÄ?k z vybranA?ch bunÄ?k
+ * len [R,C] - do buL?ky na L?AAdku R a sloupci C uloLžA­ dAŠlku L?etÄ?zce aktuAAlnÄ? vybranAŠ buL?ky
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +45,9 @@ typedef struct riadok {
 
 //todo escapovat v prikazoch
 //todo escapovat v texte
+//todo nekontrolujem ci nahodou vyber riadku stlpca neni nula
+//todo komentare dat prec dlzne a makcene
+//todo niekde _ niekde 1000 tak sa rozhodni
 
 void vynuluj(char pole[]);
 
@@ -62,7 +65,7 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]);
 
 RIADOK *uvolni(RIADOK *zaciatok);
 
-RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_do);
+RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_od);
 
 RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do);
 
@@ -107,7 +110,6 @@ int main(int argc, char *argv[]) {
     RIADOK *zaciatok = NULL;
     char delimiter = ' ', delimiter_array[MAX] = {0}, meno_suboru[MAX] = {0}, prikazy[1000][1000];
     int i = 1, pocet_prikazov = 0;
-    strcpy(meno_suboru, argv[argc - 1]);
     //if podmienka ktora skontroluje ci sa realne nacital delimeter, ak ano i = 3(dalsi argument v poradi)
     if (strcmp(argv[1], "-d") == 0){
         if ((nacitaj_delimiter(argc, argv, &delimiter, delimiter_array))) {
@@ -116,6 +118,7 @@ int main(int argc, char *argv[]) {
     } else {
         delimiter_array[0] = ' ';
     }
+    strcpy(meno_suboru, argv[argc - 1]);
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
     pocet_prikazov = nacitaj_prikazy(argc, argv, prikazy, i);
 
@@ -222,12 +225,22 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
         exit(-1);
     } else {
         char c = 0;
-        int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1, kontrola = 0;
+        int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1, kontrola = 0, kontrola_uvodzoviek = 0;
         temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
         temp_riadok->p_dalsi_riadok = NULL;
         temp_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
         do {                              // while cyklus sa vykonava dokym nenarazi na koniec suboru
             c = getc(fr);
+            // escapujeme \ */
+//            if (c == '\\'){
+//                c = getc(fr);
+//            }
+//            if (c == '"'){
+//                kontrola_uvodzoviek++;
+//                if(kontrola_uvodzoviek == 2){
+//                    kontrola_uvodzoviek = 0;
+//                }
+//            }
             if (c == '\n') {
                 c = getc(fr);
                 temp_stlpec->bunka[i] = '\0';
@@ -242,24 +255,23 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
                 pomocna_stlpec = 1;
                 j = 0, i = 0;
-                if (zaciatok == NULL) {                                    // ak načítavame prvý riadok
+                if (zaciatok == NULL) {                                    // ak nacitavame prvky riadok
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
-                    while (p_riadok->p_dalsi_riadok !=
-                           NULL) {                      // pripojíme struct na koniec linked listu
+                    while (p_riadok->p_dalsi_riadok != NULL) {                      // pripojA­me struct na koniec linked listu
                         p_riadok = p_riadok->p_dalsi_riadok;
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
                 temp_riadok->p_dalsi_riadok = NULL;
             } else if (c == EOF) {
                 temp_stlpec->bunka[i] = '\0';
                 if (p_stlpec ==
-                    NULL) {                                      //ak načítaveme prvý riadok, uložíme jeho adresu
+                    NULL) {                                      //ak naÄA­taveme prvA? riadok, uloLžA­me jeho adresu
                     p_stlpec = temp_stlpec;
                     temp_riadok->stlpec = p_stlpec;
                 } else {
@@ -267,17 +279,17 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     p_stlpec = temp_stlpec;
                 }
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
-                if (zaciatok == NULL) {                                    // ak načítavame prvý riadok
+                if (zaciatok == NULL) {                                    // ak naÄA­tavame prvA? riadok
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
                     while (p_riadok->p_dalsi_riadok !=
-                           NULL) {                      // pripojíme struct na koniec linked listu
+                           NULL) {                      // pripojA­me struct na koniec linked listu
                         p_riadok = p_riadok->p_dalsi_riadok;
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri výpise vedel while cyklus kedy skončiť
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
                 p_stlpec = NULL;
 //                printf("Koniec!\n");
                 if (fclose(fr) == EOF) {
@@ -285,10 +297,11 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 }
                 return zaciatok;
             }
+//            if(kontrola_uvodzoviek == 0){
             while (j < (int) strlen(delimiter_array)) {
                 if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                     temp_stlpec->bunka[i] = '\0';
-                    if (p_stlpec == NULL) {                                      //ak načítaveme prvého herca, uložíme jeho adresu do temp_film->herec
+                    if (p_stlpec == NULL) {                                      //ak naÄA­taveme prvAŠho herca, uloLžA­me jeho adresu do temp_film->herec
                         p_stlpec = temp_stlpec;
                         temp_riadok->stlpec = p_stlpec;
                     } else {
@@ -302,6 +315,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 }
                 j++;
             }
+//            }
             if (kontrola == 1) {
                 kontrola = 0;
             } else {
@@ -322,7 +336,7 @@ int nacitaj_prikazy(int argc, char *argv[], char prikazy[][1000], int i) {
     }
     while(argv[i][j] != '\0'){
         if (argv[i][j] == ';') {
-            printf("%s\n", prikazy[r]);
+//            printf("%s\n", prikazy[r]);
             r++, j++, s = 0;
         }
         prikazy[r][s++] = argv[i][j++];
@@ -357,7 +371,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char pomocny_array[1000] = {0}, pomocny_array_2[1000] = {0}, *ptr;
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
-        while (i < pocet_prikazov) {
+        while (i <= pocet_prikazov) {
             zarovnaj(zaciatok);
             if (prikazy[i][0] == '[') {
                 int kontrola_ciarok = 0;
@@ -764,7 +778,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
 
 void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
     FILE *fr;
-    if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spýtame či máme vôbec čo vypisovať
+    if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spA?tame Äi mAAme vA´bec Äo vypisovaLL
         if ((fr = fopen(meno_suboru, "w")) == NULL) {
             fprintf(stderr, "%s", "Subor sa nepodarilo otvorit!");
             zaciatok = uvolni(zaciatok);
@@ -780,12 +794,12 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
                             fprintf(fr, "%c", delimiter);
                         }
                         f = f->p_dalsi_stlpec;
-                    } while (f != NULL);                                // vypisujeme dokial je čo vypisovať
+                    } while (f != NULL);                                // vypisujeme dokial je Äo vypisovaLL
                 }
                 p = p->p_dalsi_riadok;
                 if (p != NULL) {
                     fprintf(fr, "\n");
-                    f = p->stlpec;                                   // nastavíme F na nového prvého herca nového filmu
+                    f = p->stlpec;                                   // nastavA­me F na novAŠho prvAŠho herca novAŠho filmu
                 }
             } while (p != NULL);
             if (fclose(fr) == EOF) {
@@ -795,12 +809,13 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
     }
 }
 
-RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_do) {
+RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_od) {
     if (zaciatok != NULL) {
         int i = 1;
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
         RIADOK *pointer_riadok = NULL;
         pomocny_pointer_riadok->p_dalsi_riadok = NULL;
+
         STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
         STLPEC *pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->stlpec = pomocny_pointer_stlpec;
@@ -818,13 +833,13 @@ RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_do) {
             pointer_stlpec = pointer_stlpec->p_dalsi_stlpec;
             pointer_stlpec->p_dalsi_stlpec = NULL;
         }
-        if (vybrany_riadok_do == 1 || vybrany_riadok_do == '_') {
+        if (vybrany_riadok_od == 1) {
             pomocny_pointer_riadok->p_dalsi_riadok = zaciatok;
             zaciatok = pomocny_pointer_riadok;
         } else {
             i = 1;
             pointer_riadok = zaciatok;
-            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_do) {
+            while (pointer_riadok->p_dalsi_riadok != NULL && i++ < vybrany_riadok_od - 1) {
                 pointer_riadok = pointer_riadok->p_dalsi_riadok;
             }
             pomocny_pointer_riadok->p_dalsi_riadok = pointer_riadok->p_dalsi_riadok;
@@ -840,6 +855,7 @@ RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do) {
         RIADOK *pomocny_pointer_riadok = (RIADOK *) malloc(sizeof(RIADOK));
         RIADOK *pointer_riadok = NULL;
         pomocny_pointer_riadok->p_dalsi_riadok = NULL;
+
         STLPEC *pomocny_pointer_stlpec = (STLPEC *) malloc(sizeof(STLPEC));
         STLPEC *pointer_stlpec = pomocny_pointer_stlpec;
         pomocny_pointer_riadok->stlpec = pomocny_pointer_stlpec;
