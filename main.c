@@ -94,14 +94,6 @@ int main(int argc, char *argv[]) {
     zaciatok = nacitaj_tabulku(meno_suboru, delimiter_array);
     pocet_prikazov = nacitaj_prikazy(argv, prikazy, i);
 
-//    i = 0; int j = 0;
-//    while(i < pocet_prikazov){
-//        while(prikazy[i][j] != '\0'){
-//            printf("%c", prikazy[i][j++]);
-//        }
-//        printf("\n");
-//        i++, j = 0;
-//    }
 
     zaciatok = spracuj_prikazy(zaciatok, prikazy, pocet_prikazov);
     vypis_tabulku(delimiter, zaciatok, meno_suboru);
@@ -131,7 +123,6 @@ void zarovnaj(RIADOK *zaciatok){
             pocitadlo = 0;
             pomocny_pointer_riadok = pomocny_pointer_riadok->p_dalsi_riadok;
         }
-//        printf("%d\n", max_pocet_stlpcov);
         pomocny_pointer_riadok = zaciatok;
         pomocny_pointer_stlpec = NULL;
 
@@ -253,12 +244,12 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
-                    while (p_riadok->p_dalsi_riadok != NULL) {                      // pripojA­me struct na koniec linked listu
+                    while (p_riadok->p_dalsi_riadok != NULL) {                      // pripojime struct na koniec linked listu
                         p_riadok = p_riadok->p_dalsi_riadok;
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vypise vedel while cyklus kedy skoncit
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
 
@@ -273,7 +264,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
             } else if (c == EOF) {
                 temp_stlpec->bunka[i] = '\0';
                 if (p_stlpec ==
-                    NULL) {                                      //ak naÄA­taveme prvA? riadok, uloLžA­me jeho adresu
+                    NULL) {                                      //ak nacitavame prvy riadok, ulozime jeho adresu
                     p_stlpec = temp_stlpec;
                     temp_riadok->stlpec = p_stlpec;
                 } else {
@@ -281,17 +272,17 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     p_stlpec = temp_stlpec;
                 }
                 temp_riadok->pocet_stlpcov = pomocna_stlpec;
-                if (zaciatok == NULL) {                                    // ak naÄA­tavame prvA? riadok
+                if (zaciatok == NULL) {                                    // ak nacitavam prvy riadok
                     zaciatok = temp_riadok;
                 } else {
                     p_riadok = zaciatok;
                     while (p_riadok->p_dalsi_riadok !=
-                           NULL) {                      // pripojA­me struct na koniec linked listu
+                           NULL) {                      // pripojime struct na koniec linked listu
                         p_riadok = p_riadok->p_dalsi_riadok;
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
+                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vypise vedel while cyklus kedy skoncit
                 p_stlpec = NULL;
 //                printf("Koniec!\n");
                 if (fclose(fr) == EOF) {
@@ -305,7 +296,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 while (j < (int) strlen(delimiter_array)) {
                     if (c == delimiter_array[j]) {            // Skontrolujeme znak ktory sme prave nacitali na vyskyt v znakoch ktore uzivatel zadal ako delimitre, ak ano, nastavime dany znak na hlavny delimiter
                         temp_stlpec->bunka[i] = '\0';
-                        if (p_stlpec == NULL) {                                      //ak naÄA­taveme prvAŠho herca, uloLžA­me jeho adresu do temp_film->herec
+                        if (p_stlpec == NULL) {                                      //ak ak nacitavame prvy stlpec
                             p_stlpec = temp_stlpec;
                             temp_riadok->stlpec = p_stlpec;
                         } else {
@@ -344,7 +335,6 @@ int nacitaj_prikazy(char *argv[], char prikazy[][1000], int i) {
 
     while(argv[i][j] != '\0'){
         if (argv[i][j] == ';') {
-//            printf("%s\n", prikazy[r]);
             r++, j++, s = 0;
             if(r > 1000){
                 fprintf(stderr, "%s", "Prilis vela prikazov!""\n");
@@ -777,7 +767,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 } else if (strcmp(pomocny_array, "def") == 0) {
                     k = j, j = 0;
                     vynuluj(pomocny_array);
-                    // j+2 pretože chceme preskočiť _
+                    // j+2 pretoze chceme preskocit _
                     j = k, k = 0, j+=2;
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
@@ -785,7 +775,6 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     k = strtod(pomocny_array, &ptr);
                     vynuluj(pomocny_array);
                     vynuluj(set);
-//                    printf("%d\n", k);
                     if(!(k >= 0 && k <= 9)){
                         fprintf(stderr, "%s", "Zly argument!""\n");
                         exit(-1);
@@ -793,13 +782,12 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     funkcia_def(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
                                 vybrany_stlpec_do_int, set);
                     strcpy(docasna_premenna_char[k], set);
-//                    printf("%s\n", docasna_premenna_char[k]);
                     vynuluj(set);
                     k = 0;
                 } else if (strcmp(pomocny_array, "use") == 0) {
                     k = j, j = 0;
                     vynuluj(pomocny_array);
-                    // j+2 pretože chceme preskočiť _
+                    // j+2 pretoze chceme preskocit _
                     j = k, k = 0, j+=2;
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
@@ -819,7 +807,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 } else if (strcmp(pomocny_array, "inc") == 0) {
                     k = j, j = 0;
                     vynuluj(pomocny_array);
-                    // j+2 pretože chceme preskočiť _
+                    // j+2 pretoze chceme preskocit _
                     j = k, k = 0, j+=2;
                     while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
                         pomocny_array[k++] = prikazy[i][j++];
@@ -848,7 +836,6 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                 }
 
             }
-//        printf("%s\n", pomocny_array);
             i++, j = 0, k = 0;
             vynuluj(pomocny_array);
             j = 0;
@@ -860,7 +847,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
 
 void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
     FILE *fr;
-    if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spA?tame Äi mAAme vA´bec Äo vypisovaLL
+    if (zaciatok != NULL) {                                                 // kvoli stabilite programu sa spytame, ci vobec mame co vypisovat
         if ((fr = fopen(meno_suboru, "w")) == NULL) {
             fprintf(stderr, "%s", "Subor sa nepodarilo otvorit!");
             zaciatok = uvolni(zaciatok);
@@ -876,12 +863,12 @@ void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]) {
                             fprintf(fr, "%c", delimiter);
                         }
                         f = f->p_dalsi_stlpec;
-                    } while (f != NULL);                                // vypisujeme dokial je Äo vypisovaLL
+                    } while (f != NULL);                                // vypisujeme pokial nenarazime na koniec
                 }
                 p = p->p_dalsi_riadok;
                 if (p != NULL) {
                     fprintf(fr, "\n");
-                    f = p->stlpec;                                   // nastavA­me F na novAŠho prvAŠho herca novAŠho filmu
+                    f = p->stlpec;                                   // ak sme nenarazili na posledny riadok, znamena to ze musime dat \n aby boli rozdelene riadky po riadkoch
                 }
             } while (p != NULL);
             if (fclose(fr) == EOF) {
@@ -1079,7 +1066,6 @@ RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do) {
             }
             pointer_riadok->p_dalsi_riadok = pomocny_pointer_riadok;
         }
-//    printf("Success");
         return zaciatok;
     }
     return zaciatok;
@@ -1414,7 +1400,6 @@ void funkcia_swap(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do
             POINTER_OD_KTOREHO_SPRACOVAVAM_SWAP = pointer_riadok;
             i = vybrany_riadok_od, o = pomocny_vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pomocny_pointer_riadok != NULL && o++ <= pomocny_vybrany_riadok_do) {
                 pomocny_pointer_stlpec = pomocny_pointer_riadok->stlpec;
                 while (t++ < pomocny_vybrany_stlpec_od) {
@@ -1491,7 +1476,6 @@ void funkcia_sum(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
             }
             i = vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < vybrany_stlpec_od) {
@@ -1549,7 +1533,6 @@ void funkcia_avg(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
             }
             i = vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < vybrany_stlpec_od) {
@@ -1610,7 +1593,6 @@ void funkcia_count(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_d
             }
             i = vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < vybrany_stlpec_od) {
@@ -1662,7 +1644,6 @@ void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
             }
             i = vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < vybrany_stlpec_od) {
@@ -1715,7 +1696,6 @@ void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
             }
             i = *vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= *vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < *vybrany_stlpec_od) {
@@ -1787,7 +1767,6 @@ void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_d
             }
             i = *vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= *vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < *vybrany_stlpec_od) {
@@ -1857,7 +1836,6 @@ void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_
             }
             i = *vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= *vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < *vybrany_stlpec_od) {
@@ -1909,7 +1887,6 @@ void funkcia_def(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do,
             }
             i = vybrany_riadok_od;
 
-            // KVOLI TOMU, ZE KED PRI PRESIAHNUTI LIMITU STLPCA NECHCEM UKONCIT CELU FUNKCIU MUSIM ROBIT ZAUJIMAVE ROZHODNUTIA
             while (pointer_riadok != NULL && i++ <= vybrany_riadok_do) {
                 pointer_stlpec = pointer_riadok->stlpec;
                 while (j++ < vybrany_stlpec_od) {
@@ -1958,7 +1935,6 @@ RIADOK *uvolni(RIADOK *zaciatok) {
             pointer_riadok = pomocny_pointer_riadok;
         }
         zaciatok = NULL;
-//        fprintf(stderr, "%s", "Vsetko uspesne vymazane!\n");
         exit(0);
         return zaciatok;
     }
