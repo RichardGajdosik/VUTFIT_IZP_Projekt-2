@@ -1,31 +1,7 @@
 /*
- * IDE CLion - Richard GajdoLAA­k
+ * IDE CLion - Richard Gajdosik
  * Implementacia druheho projektu z predmetu IZP, zimny semester, skolsky rok 20/21
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Command list * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * [R,C] - vA?bÄ?r buL?ky na L?AAdku R a sloupci C.
- * [R,_] - vA?bÄ?r celAŠho L?AAdku R.
- * [_,C] - vA?bÄ?r celAŠho sloupce C.
- * [R1,C1,R2,C2] - vA?bÄ?r okna, tj. vLAech bunÄ?k na L?AAdku R a sloupci C, pro kterAŠ platA­ R1 <= R <= R2, C1 <= C <= C2. Pokud namA­sto ÄA­sla R2 resp. C2 bude pomlÄka, nahrazuje tak maximAAlnA­ L?AAdek resp. sloupec v tabulce.
- * [_,_] - vA?bÄ?r celAŠ tabulky.
- * [min] - v jiLž existujA­cA­m vA?bÄ?ru bunÄ?k najde buL?ku s minimAAlnA­ numerickou hodnotou a vA?bÄ?r nastavA­ na ni.
- * [max] - obdobnÄ? jako pL?edchozA­ pL?A­kaz, ale najde buL?ku s maximAAlnA­ hodnotou.
- * [find STR] - v jiLž existujA­cA­m vA?bÄ?ru bunÄ?k vybere prvnA­ buL?ku, jejA­Lž hodnota obsahuje podL?etÄ?zec STR.
- *       PL?A­kazy pro Aspravu struktury tabulky
- * irow - vloLžA­ jeden prAAzdnA? L?AAdek nalevo od vybranA?ch bunÄ?k nad vybranAŠ buL?ky.
- * arow - pL?idAA jeden prAAzdnA? L?AAdek napravo od vybranA?ch bunÄ?k pod vybranAŠ buL?ky.
- * drow - odstranA­ vybranAŠ L?AAdky.
- * icol - vloLžA­ jeden prAAzdnA? sloupec nalevo od vybranA?ch bunÄ?k.
- * acol - pL?idAA jeden prAAzdnA? sloupec napravo od vybranA?ch bunÄ?k.
- * dcol - odstranA­ vybranAŠ sloupce.
- *       PL?A­kazy pro Aspravu obsahu bunÄ?k
- * set STR - nastavA­ hodnotu buL?ky na L?etÄ?zec STR. L?etÄ?zec STR mLZLže bA?t ohraniÄen uvozovkami a mLZLže obsahovat speciAAlnA­ znaky uvozenAŠ lomA­tkem (viz formAAt tabulky)
- * clear - obsah vybranA?ch bunÄ?k bude odstranÄ?n (buL?ky budou mA­t prAAzdnA? obsah)
- * swap [R,C] - vymÄ?nA­ obsah vybranAŠ buL?ky s buL?kou na L?AAdku R a sloupci C
- * sum [R,C] - do buL?ky na L?AAdku R a sloupci C uloLžA­ souÄet hodnot vybranA?ch bunÄ?k (odpovA­dajA­cA­ formAAtu %g u printf). VybranAŠ buL?ky neobsahujA­cA­ ÄA­slo budou ignorovAAny (jako by vybrAAny nebyly).
- * avg [R,C] - stejnAŠ jako sum, ale uklAAdAA se aritmetickA? prLZmÄ?r z vybranA?ch bunÄ?k
- * count [R,C] - stejnAŠ jako sum, ale uklAAdAA se poÄet neprAAzdnA?ch bunÄ?k z vybranA?ch bunÄ?k
- * len [R,C] - do buL?ky na L?AAdku R a sloupci C uloLžA­ dAŠlku L?etÄ?zce aktuAAlnÄ? vybranAŠ buL?ky
+ * Ospravedlnujem sa za chybajuce komentare
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,63 +20,61 @@ typedef struct riadok {
 } RIADOK;
 
 
-//todo komentare dat prec dlzne a makcene
+/* vynuluje pole ktore pride ako argument*/
 void vynuluj(char pole[]);
-
+/* Zisti riadok v ktorom je najviac stlpcov a ich pocet, doplni stlpce do riadkov ktore nemaju dozadovany pocet stlpcov*/
 void zarovnaj(RIADOK *zaciatok);
-
+/*Nacita delimiter chary*/
 int nacitaj_delimiter(int argc, char *argv[], char *delimiter, char delimiter_array[]);
-
+/*Nacitava tabulku a pridava do zoznamu*/
 RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]);
-
+/*Nacita prikazy a zaroven skontroluje ich pocet, spracnost prikazov sa kontroluje az vo funkcii spracuj prikazy*/
 int nacitaj_prikazy(char *argv[], char prikazy[][1000], int i);
-
+/*Velka funkcia ktora zaroven kontroluje spravnost prikazov a zaroven ich aj vykonova*/
 RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikazov);
-
+/*Vypise celu tabulku az po spracovani vsetkych prikazov*/
 void vypis_tabulku(char delimiter, RIADOK *zaciatok, char meno_suboru[]);
-
+/*Uvolni kompletne celu tabulku, pointre prejdu vsetky riadky a stlpce az dokym nenarazia na NULL*/
 RIADOK *uvolni(RIADOK *zaciatok);
-
+/*pointer sa nastavi pred vyber buniek a vlozi tam prazdny riadok so stlpcami*/
 RIADOK *irow(RIADOK *zaciatok, int vybrany_riadok_od);
-
+/*pointer sa nastavi za vyber buniek a vlozi tam prazdny riadok so stlpcami*/
 RIADOK *arow(RIADOK *zaciatok, int vybrany_riadok_do);
-
+/*Vymaze vybrane riadky*/
 RIADOK *drow(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do);
-
+/*pointer sa nastavi pred vyber buniek a vlozi tam prazdny stlpec*/
 RIADOK *icol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do);
-
+/*pointer sa nastavi za vyber buniek a vlozi tam prazdny stlpec*/
 RIADOK *acol(RIADOK *zaciatok, int vybrany_riadok_do, int vybrany_stlpec_do);
-
+/*Vymaze vybrane stlpce, riadky ponecha*/
 RIADOK *dcol(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od, int vybrany_stlpec_do);
-
-void funkcia_set(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
-                 int vybrany_stlpec_do,
-                 char *set);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a ak sa nachadzaju v zadanom vybere prepise ich hodnotu na string set*/
+void funkcia_set(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od, int vybrany_stlpec_do, char *set);
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a ak sa nachadzaju v zadanom vybere vymeni hodnotu v tabulke s hodnotou v stringu set*/
 void funkcia_swap(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
                   int vybrany_stlpec_do, int riadok, int stlpec);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a scita ich hodnoty a potom tuto hodnotu vpise do vybraneho riadku a stlpca*/
 void funkcia_sum(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
                  int vybrany_stlpec_do, int riadok, int stlpec);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a ak zisti priemer hodnot a potom tuto hodnotu vpise do vybraneho riadku a stlpca*/
 void funkcia_avg(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
                  int vybrany_stlpec_do, int riadok, int stlpec);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a scita neprazdne bunky a potom tuto hodnotu vpise do vybraneho riadku a stlpca*/
 void funkcia_count(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
                    int vybrany_stlpec_do, int riadok, int stlpec);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a zisti dlzku stringu a potom tuto hodnotu vpise do vybraneho riadku a stlpca*/
 void funkcia_len(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od,
                  int vybrany_stlpec_do, int riadok, int stlpec);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a vyber buniek nastavi na najmensiu hodnotu*/
 void funkcia_min(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,
                  int *vybrany_stlpec_do);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a vyber buniek nastavi na najvacsiu hodnotu*/
 void funkcia_max(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,
                  int *vybrany_stlpec_do);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a vyber buniek nastavi na bunku ktorej obsah sa zhoduje so stringom set*/
 void funkcia_find(RIADOK *zaciatok, int *vybrany_riadok_od, int *vybrany_riadok_do, int *vybrany_stlpec_od,
                   int *vybrany_stlpec_do, char pomocny_array_2[]);
-
+/*Kompletne prechadza všetky riadoky a vsetky stlpce, a zadane bunky uchova v docasnej premennej*/
 void funkcia_def(RIADOK *zaciatok, int vybrany_riadok_od, int vybrany_riadok_do, int vybrany_stlpec_od, int vybrany_stlpec_do, char *set);
 
 
