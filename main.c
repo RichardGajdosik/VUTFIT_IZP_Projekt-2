@@ -374,10 +374,20 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
         char pomocny_array[1000] = {0}, pomocny_array_2[1000] = {0}, *ptr;
         char set[1000] = {0};
         int kontrola_R1_C1_R2_C2 = 0;
-        char docasna_premenna[10][1000];
+        char docasna_premenna_char[10][1000];
+        int docasna_premenna_int[10];
         while (i <= pocet_prikazov) {
             zarovnaj(zaciatok);
             if (prikazy[i][0] == '[') {
+                if(prikazy[i][1] == '_' && prikazy[i][2] == ']'){
+                    vybrany_riadok_od_int = docasna_premenna_int[0];
+                    vybrany_stlpec_od_int = docasna_premenna_int[1];
+                    vybrany_riadok_do_int = docasna_premenna_int[2];
+                    vybrany_stlpec_do_int = docasna_premenna_int[3];
+                    i++, j = 0, k = 0;
+                    vynuluj(pomocny_array);
+                    continue;
+                }
                 int kontrola_ciarok = 0;
                 j = 1, predchadzajuci_vybrany_riadok_od_int = vybrany_riadok_od_int, predchadzajuci_vybrany_riadok_do_int = vybrany_riadok_do_int,
                 predchadzajuci_vybrany_stlpec_od_int = vybrany_stlpec_od_int,
@@ -524,7 +534,10 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     funkcia_max(zaciatok, &vybrany_riadok_od_int, &vybrany_riadok_do_int, &vybrany_stlpec_od_int,
                                 &vybrany_stlpec_do_int);
                 } else if (strcmp(pomocny_array_2, "set") == 0) {
-                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                    docasna_premenna_int[0] = vybrany_riadok_od_int;
+                    docasna_premenna_int[1] = vybrany_stlpec_od_int;
+                    docasna_premenna_int[2] = vybrany_riadok_do_int;
+                    docasna_premenna_int[3] = vybrany_stlpec_do_int;
                 } else if (strcmp(pomocny_array_2, "find") == 0) {
                     //plus dva nakolko chcem skocit z posledneho znaku, cez medzeru na string ktory chceme nacitat a vyhladat v tabulke
                     int f = (int) strlen(pomocny_array_2) + 2;
@@ -779,8 +792,8 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     }
                     funkcia_def(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
                                 vybrany_stlpec_do_int, set);
-                    strcpy(docasna_premenna[k], set);
-//                    printf("%s\n", docasna_premenna[k]);
+                    strcpy(docasna_premenna_char[k], set);
+//                    printf("%s\n", docasna_premenna_char[k]);
                     vynuluj(set);
                     k = 0;
                 } else if (strcmp(pomocny_array, "use") == 0) {
@@ -798,7 +811,7 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                         fprintf(stderr, "%s", "Zly argument!""\n");
                         exit(-1);
                     }
-                    strcpy(set, docasna_premenna[k]);
+                    strcpy(set, docasna_premenna_char[k]);
                     funkcia_set(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
                                 vybrany_stlpec_do_int, set);
                     vynuluj(set);
@@ -817,14 +830,14 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                         fprintf(stderr, "%s", "Zly argument!""\n");
                         exit(-1);
                     }
-                    strcpy(pomocny_array, docasna_premenna[k]);
+                    strcpy(pomocny_array, docasna_premenna_char[k]);
                     int g = strtod(pomocny_array, &ptr);
                     if(g == 0){
-                        strcpy(docasna_premenna[k], "1");
+                        strcpy(docasna_premenna_char[k], "1");
                     } else {
                         g++;
                         sprintf(pomocny_array,"%d", g);
-                        strcpy(docasna_premenna[k], pomocny_array);
+                        strcpy(docasna_premenna_char[k], pomocny_array);
                     }
                     vynuluj(pomocny_array);
                     k = 0;
