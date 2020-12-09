@@ -49,6 +49,7 @@ typedef struct riadok {
 //todo komentare dat prec dlzne a makcene
 //todo niekde _ niekde 1000 tak sa rozhodni
 //todo vynulovať 2d array docasna_premenna_char
+//todo pridat malloc check
 void vynuluj(char pole[]);
 
 void zarovnaj(RIADOK *zaciatok);
@@ -269,6 +270,7 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                 p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
                 p_stlpec = NULL;
                 temp_riadok = (RIADOK *) malloc(sizeof(RIADOK));
+                temp_riadok->stlpec = temp_stlpec;
                 temp_riadok->p_dalsi_riadok = NULL;
             } else if (c == EOF) {
                 temp_stlpec->bunka[i] = '\0';
@@ -291,11 +293,13 @@ RIADOK *nacitaj_tabulku(char meno_suboru[], char delimiter_array[]) {
                     }
                     p_riadok->p_dalsi_riadok = temp_riadok;
                 }
-                p_stlpec->p_dalsi_stlpec = NULL;                                  // vynulovanie, aby pri vA?pise vedel while cyklus kedy skonÄiLL
+                p_stlpec->p_dalsi_stlpec = NULL;
                 p_stlpec = NULL;
 //                printf("Koniec!\n");
                 if (fclose(fr) == EOF) {
                     fprintf(stderr, "%s", "Nepodarilo sa zatvorit subor!""\n");
+                    uvolni(zaciatok);
+                    exit(-1);
                 }
                 return zaciatok;
             }
