@@ -802,8 +802,32 @@ RIADOK *spracuj_prikazy(RIADOK *zaciatok, char prikazy[][1000], int pocet_prikaz
                     funkcia_set(zaciatok, vybrany_riadok_do_int, vybrany_riadok_do_int, vybrany_stlpec_do_int,
                                 vybrany_stlpec_do_int, set);
                     vynuluj(set);
+                    k = 0;
                 } else if (strcmp(pomocny_array, "inc") == 0) {
-                    fprintf(stderr, "%s", "Tento argument neni bohuzial podporovany mojim programom!""\n");
+                    k = j, j = 0;
+                    vynuluj(pomocny_array);
+                    // j+2 pretože chceme preskočiť _
+                    j = k, k = 0, j+=2;
+                    while (prikazy[i][j] != ' ' && prikazy[i][j] != '\0') {
+                        pomocny_array[k++] = prikazy[i][j++];
+                    }
+                    k = strtod(pomocny_array, &ptr);
+                    vynuluj(pomocny_array);
+                    if(!(k >= 0 && k <= 9)){
+                        fprintf(stderr, "%s", "Zly argument!""\n");
+                        exit(-1);
+                    }
+                    strcpy(pomocny_array, docasna_premenna[k]);
+                    int g = strtod(pomocny_array, &ptr);
+                    if(g == 0){
+                        strcpy(docasna_premenna[k], "1");
+                    } else {
+                        g++;
+                        sprintf(pomocny_array,"%d", g);
+                        strcpy(docasna_premenna[k], pomocny_array);
+                    }
+                    vynuluj(pomocny_array);
+                    k = 0;
                 } else {
                     fprintf(stderr, "%s", "Zly argument!""\n");
                     zaciatok = uvolni(zaciatok);
